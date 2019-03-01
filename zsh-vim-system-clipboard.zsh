@@ -14,7 +14,7 @@ if (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
 		esac
 	}
 
-elif (( $+DISPLAY & $+command[xclip] )); then
+elif (( $+DISPLAY & $+commands[xclip] )); then
 	system-clipboard-get(){
 		case "$1" in
 			'*') xclip -out ;;
@@ -29,7 +29,7 @@ elif (( $+DISPLAY & $+command[xclip] )); then
 		esac
 	}
 
-elif (( $+DISPLAY & $+command[xsel] )); then
+elif (( $+DISPLAY & $+commands[xsel] )); then
 	system-clipboard-get system-clipboard-set(){
 		case "$1" in
 			'*') xsel ;;
