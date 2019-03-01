@@ -38,63 +38,48 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	}
 fi
 
-# shadow vi-yank*
-vi-yank-disp(){
-	(( $+_disp_reg )) || zle vi-yank
+
+# shadow all yank commands
+__yank_disp(){
+	(( $+_disp_reg )) || zle "$1"
 	local x
 	x=$registers[x]
-	zle vi-yank
+	zle "$1"
 	system-clipboard-set <<< "${registers[x]}"
 	registers[x]="$x"
 	unset _disp_reg
 }
+
+vi-yank-disp(){ __yank_disp vi-yank }
+
+vi-yank-whole-line-disp(){ __yank_disp vi-yank-whole-line }
+
+vi-yank-eol-disp(){ __yank_disp vi-yank-eol }
+
 zle -N vi-yank-disp
 bindkey -M vicmd y vi-yank-disp
 
-vi-yank-whole-line-disp(){
-	(( $+_disp_reg )) || zle vi-yank-whole-line
-	local x
-	x=$registers[x]
-	zle vi-yank-whole-line
-	system-clipboard-set <<< "${registers[x]}"
-	registers[x]="$x"
-	unset _disp_reg
-}
-
-vi-yank-eol-disp(){
-	(( $+_disp_reg )) || zle vi-yank-eol
-	local x
-	x=$registers[x]
-	zle vi-yank-eol
-	system-clipboard-set <<< "${registers[x]}"
-	registers[x]="$x"
-	unset _disp_reg
-}
 zle -N vi-yank-disp
 bindkey -M vicmd Y vi-yank-disp
 
-# shadow vi-put*
-vi-put-after-disp(){
-	(( $+_disp_reg )) || zle vi-put-after
+# shadow all put commands
+__paste_disp(){
+	(( $+_disp_reg )) || zle "$1"
 	local x
 	x=$registers[x]
 	registers[x]="$(system-clipboard-get "$_disp_reg")"
-	zle vi-put-after
+	zle "$1"
 	registers[x]="$x"
 	unset _disp_reg
 }
+
+vi-put-after-disp(){ __paste_disp vi-put-after }
+
+vi-put-before-disp(){ __paste_disp vi-put-before }
+
 zle -N vi-put-after-disp
 bindkey -M vicmd p vi-put-after-disp
 
-vi-put-before-disp(){
-	(( $+_disp_reg )) || zle vi-put-before
-	local x
-	x=$registers[x]
-	registers[x]="$(system-clipboard-get "$_disp_reg")"
-	zle vi-put-before
-	registers[x]="$x"
-	unset _disp_reg
-}
 zle -N vi-put-before-disp
 bindkey -M vicmd P vi-put-before-disp
 
