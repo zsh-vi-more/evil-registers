@@ -46,6 +46,7 @@ vi-yank-disp(){
 	zle vi-yank
 	system-clipboard-set <<< "${registers[x]}"
 	registers[x]="$x"
+	unset _disp_reg
 }
 zle -N vi-yank-disp
 bindkey -M vicmd y vi-yank-disp
@@ -57,6 +58,7 @@ vi-yank-whole-line-disp(){
 	zle vi-yank-whole-line
 	system-clipboard-set <<< "${registers[x]}"
 	registers[x]="$x"
+	unset _disp_reg
 }
 
 vi-yank-eol-disp(){
@@ -66,6 +68,7 @@ vi-yank-eol-disp(){
 	zle vi-yank-eol
 	system-clipboard-set <<< "${registers[x]}"
 	registers[x]="$x"
+	unset _disp_reg
 }
 zle -N vi-yank-disp
 bindkey -M vicmd Y vi-yank-disp
@@ -78,6 +81,7 @@ vi-put-after-disp(){
 	registers[x]="$(system-clipboard-get "$_disp_reg")"
 	zle vi-put-after
 	registers[x]="$x"
+	unset _disp_reg
 }
 zle -N vi-put-after-disp
 bindkey -M vicmd p vi-put-after-disp
@@ -89,6 +93,7 @@ vi-put-before-disp(){
 	registers[x]="$(system-clipboard-get "$_disp_reg")"
 	zle vi-put-before
 	registers[x]="$x"
+	unset _disp_reg
 }
 zle -N vi-put-before-disp
 bindkey -M vicmd P vi-put-before-disp
