@@ -1,4 +1,5 @@
 (( $+DISPLAY | $+WAYLAND_DISPLAY )) || return
+zmodload zsh/parameter
 if (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
 	system-clipboard-get(){
 		case "$1" in
