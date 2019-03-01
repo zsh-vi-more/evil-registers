@@ -1,2 +1,2 @@
 # zsh-vi-system-clipboard
-Access system clipboard in vicmd with "+ and "*
+Access system clipboard under the `vicmd` keymap with `"+` and `"*`.
