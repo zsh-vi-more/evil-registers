@@ -1,4 +1,4 @@
-# zsh-vi-system-clipboard
+# Zsh Vim system clipboard
 Access system clipboard under the `vicmd` keymap with `"+` and `"*`.
 
 ## Supported interfaces:
