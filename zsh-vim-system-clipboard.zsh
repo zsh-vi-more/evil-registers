@@ -1,3 +1,4 @@
+# {{{ set system clipboard
 (( $+DISPLAY | $+WAYLAND_DISPLAY )) || return
 zmodload zsh/parameter
 if (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
@@ -38,80 +39,73 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 		esac
 	}
 fi
-
-# shadow vi-yank*
-vi-yank-disp(){
-	(( $+_disp_reg )) || zle vi-yank
+# }}}
+# {{{ shadow all yank commands
+__yank-clipboard(){
+	(( $+_system_register )) || zle "$1"
+	zle .vi-set-buffer x
 	local x
 	x=$registers[x]
-	zle vi-yank
-	system-clipboard-set <<< "${registers[x]}"
+	zle "$1"
+	system-clipboard-set "$_system_register" <<< "${registers[x]}"
 	registers[x]="$x"
-	unset _disp_reg
-}
-zle -N vi-yank-disp
-bindkey -M vicmd y vi-yank-disp
-
-vi-yank-whole-line-disp(){
-	(( $+_disp_reg )) || zle vi-yank-whole-line
-	local x
-	x=$registers[x]
-	zle vi-yank-whole-line
-	system-clipboard-set <<< "${registers[x]}"
-	registers[x]="$x"
-	unset _disp_reg
+	unset _system_register
 }
 
-vi-yank-eol-disp(){
-	(( $+_disp_reg )) || zle vi-yank-eol
-	local x
-	x=$registers[x]
-	zle vi-yank-eol
-	system-clipboard-set <<< "${registers[x]}"
-	registers[x]="$x"
-	unset _disp_reg
-}
-zle -N vi-yank-disp
-bindkey -M vicmd Y vi-yank-disp
+vi-delete-clipboard(){ __yank-clipboard .vi-delete }
 
-# shadow vi-put*
-vi-put-after-disp(){
-	(( $+_disp_reg )) || zle vi-put-after
-	local x
-	x=$registers[x]
-	registers[x]="$(system-clipboard-get "$_disp_reg")"
-	zle vi-put-after
-	registers[x]="$x"
-	unset _disp_reg
-}
-zle -N vi-put-after-disp
-bindkey -M vicmd p vi-put-after-disp
+vi-delete-char-clipboard(){ __yank-clipboard .vi-delete-char }
 
-vi-put-before-disp(){
-	(( $+_disp_reg )) || zle vi-put-before
-	local x
-	x=$registers[x]
-	registers[x]="$(system-clipboard-get "$_disp_reg")"
-	zle vi-put-before
-	registers[x]="$x"
-	unset _disp_reg
-}
-zle -N vi-put-before-disp
-bindkey -M vicmd P vi-put-before-disp
+vi-kill-line-clipboard(){ __yank-clipboard .vi-kill-line }
 
-# shadow vi-set-buffer
-vi-set-buffer-disp(){
+vi-kill-eol-clipboard(){ __yank-clipboard .vi-kill-eol }
+
+vi-change-clipboard(){ __yank-clipboard .vi-change }
+
+vi-change-eol-clipboard(){ __yank-clipboard .vi-change-eol }
+
+vi-change-whole-line-clipboard(){ __yank-clipboard .vi-change-whole-line }
+
+vi-yank-clipboard(){ __yank-clipboard .vi-yank }
+
+vi-yank-whole-line-clipboard(){ __yank-clipboard .vi-yank-whole-line }
+
+vi-yank-eol-clipboard(){ __yank-clipboard .vi-yank-eol }
+# }}}
+# {{{ shadow all put commands
+__paste-clipboard(){
+	(( $+_system_register )) || zle "$1"
+	CUTBUFFER="$(system-clipboard-get "$_system_register")"
+	zle .vi-set-buffer ''
+	zle "$1"
+	unset _system_register
+}
+
+vi-put-after-clipboard(){ __paste-clipboard .vi-put-after }
+
+vi-put-before-clipboard(){ __paste-clipboard .vi-put-before }
+# }}}
+# {{{ shadow vi-set-buffer
+vi-set-buffer-clipboard(){
 	read -k 1 v
 	case $v in
-		[+*])
-			_disp_reg="$v"
-			zle vi-set-buffer x
-		;;
+		[+*]) _system_register="$v" ;;
 		*)
-			unset _disp_reg
-			zle vi-set-buffer "$v"
+			unset _system_register
+			zle .vi-set-buffer "$v"
 		;;
 	esac
 }
-zle -N vi-set-buffer-disp
-bindkey -M vicmd '"' vi-set-buffer-disp
+# }}}
+# {{{ register new widgets
+for w in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
+	vi-change vi-change-eol vi-change-whole-line \
+	vi-yank vi-yank-whole-line vi-yank-eol \
+	vi-put-after vi-put-before vi-set-buffer
+do
+	# TODO: best practice?
+	# overwrite old widgets
+	zle -N "$w" "${w}-clipboard"
+done
+# }}}
+# vim:foldmethod=marker
