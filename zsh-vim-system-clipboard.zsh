@@ -1,3 +1,4 @@
+# {{{ set system clipboard
 (( $+DISPLAY | $+WAYLAND_DISPLAY )) || return
 if (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
 	system-clipboard-get(){
@@ -37,65 +38,72 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 		esac
 	}
 fi
-
-
-# shadow all yank commands
-__yank_disp(){
-	(( $+_disp_reg )) || zle "$1"
+# }}}
+# {{{ shadow all yank commands
+__yank-clipboard(){
+	(( $+_system_register )) || zle "$1"
+	zle vi-set-buffer x
 	local x
 	x=$registers[x]
 	zle "$1"
-	system-clipboard-set <<< "${registers[x]}"
+	system-clipboard-set "$_system_register" <<< "${registers[x]}"
 	registers[x]="$x"
-	unset _disp_reg
+	unset _system_register
 }
 
-vi-yank-disp(){ __yank_disp vi-yank }
+vi-delete-clipboard(){ __yank-clipboard zle-vi-delete }
 
-vi-yank-whole-line-disp(){ __yank_disp vi-yank-whole-line }
+vi-delete-char-clipboard(){ __yank-clipboard zle-vi-delete-char }
 
-vi-yank-eol-disp(){ __yank_disp vi-yank-eol }
+vi-kill-line-clipboard(){ __yank-clipboard zle-vi-kill-line }
 
-zle -N vi-yank-disp
-bindkey -M vicmd y vi-yank-disp
+vi-kill-eol-clipboard(){ __yank-clipboard zle-vi-kill-eol }
 
-zle -N vi-yank-disp
-bindkey -M vicmd Y vi-yank-disp
+vi-change-clipboard(){ __yank-clipboard zle-vi-change }
 
-# shadow all put commands
-__paste_disp(){
-	(( $+_disp_reg )) || zle "$1"
-	local x
-	x=$registers[x]
-	registers[x]="$(system-clipboard-get "$_disp_reg")"
+vi-change-eol-clipboard(){ __yank-clipboard zle-vi-change-eol }
+
+vi-change-whole-line-clipboard(){ __yank-clipboard zle-vi-change-whole-line }
+
+vi-yank-clipboard(){ __yank-clipboard zle-vi-yank }
+
+vi-yank-whole-line-clipboard(){ __yank-clipboard zle-vi-yank-whole-line }
+
+vi-yank-eol-clipboard(){ __yank-clipboard zle-vi-yank-eol }
+# }}}
+# {{{ shadow all put commands
+__paste-clipboard(){
+	(( $+_system_register )) || zle "$1"
+	CUTBUFFER="$(system-clipboard-get "$_system_register")"
+	zle vi-set-buffer ''
 	zle "$1"
-	registers[x]="$x"
-	unset _disp_reg
+	unset _system_register
 }
 
-vi-put-after-disp(){ __paste_disp vi-put-after }
+vi-put-after-clipboard(){ __paste-clipboard vi-put-after }
 
-vi-put-before-disp(){ __paste_disp vi-put-before }
-
-zle -N vi-put-after-disp
-bindkey -M vicmd p vi-put-after-disp
-
-zle -N vi-put-before-disp
-bindkey -M vicmd P vi-put-before-disp
-
-# shadow vi-set-buffer
-vi-set-buffer-disp(){
+vi-put-before-clipboard(){ __paste-clipboard vi-put-before }
+# }}}
+# {{{ shadow vi-set-buffer
+vi-set-buffer-clipboard(){
 	read -k 1 v
 	case $v in
-		[+*])
-			_disp_reg="$v"
-			zle vi-set-buffer x
-		;;
+		[+*]) _system_register="$v" ;;
 		*)
-			unset _disp_reg
+			unset _system_register
 			zle vi-set-buffer "$v"
 		;;
 	esac
 }
-zle -N vi-set-buffer-disp
-bindkey -M vicmd '"' vi-set-buffer-disp
+# }}}
+# {{{ register new functions
+for fn in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
+	vi-change vi-change-eol vi-change-whole-line \
+	vi-yank vi-yank-whole-line vi-yank-eol \
+	vi-put-after vi-put-before vi-set-buffer
+do
+	zle -A "$fn" "zle-$fn"
+	zle -N "$fn" "${fn}-clipboard"
+done
+# }}}
+# vim:foldmethod=marker
