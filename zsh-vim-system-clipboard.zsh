@@ -96,6 +96,7 @@ vi-put-before-clipboard(){ __paste-clipboard .vi-put-before }
 # }}}
 # {{{ shadow vi-set-buffer
 vi-set-buffer-clipboard(){
+	local v
 	read -k 1 v
 	case $v in
 		[+*]) _system_register="$v" ;;
