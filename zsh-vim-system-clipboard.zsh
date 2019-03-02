@@ -42,7 +42,7 @@ fi
 # {{{ shadow all yank commands
 __yank-clipboard(){
 	(( $+_system_register )) || zle "$1"
-	zle vi-set-buffer x
+	zle .vi-set-buffer x
 	local x
 	x=$registers[x]
 	zle "$1"
@@ -51,38 +51,38 @@ __yank-clipboard(){
 	unset _system_register
 }
 
-vi-delete-clipboard(){ __yank-clipboard zle-vi-delete }
+vi-delete-clipboard(){ __yank-clipboard .vi-delete }
 
-vi-delete-char-clipboard(){ __yank-clipboard zle-vi-delete-char }
+vi-delete-char-clipboard(){ __yank-clipboard .vi-delete-char }
 
-vi-kill-line-clipboard(){ __yank-clipboard zle-vi-kill-line }
+vi-kill-line-clipboard(){ __yank-clipboard .vi-kill-line }
 
-vi-kill-eol-clipboard(){ __yank-clipboard zle-vi-kill-eol }
+vi-kill-eol-clipboard(){ __yank-clipboard .vi-kill-eol }
 
-vi-change-clipboard(){ __yank-clipboard zle-vi-change }
+vi-change-clipboard(){ __yank-clipboard .vi-change }
 
-vi-change-eol-clipboard(){ __yank-clipboard zle-vi-change-eol }
+vi-change-eol-clipboard(){ __yank-clipboard .vi-change-eol }
 
-vi-change-whole-line-clipboard(){ __yank-clipboard zle-vi-change-whole-line }
+vi-change-whole-line-clipboard(){ __yank-clipboard .vi-change-whole-line }
 
-vi-yank-clipboard(){ __yank-clipboard zle-vi-yank }
+vi-yank-clipboard(){ __yank-clipboard .vi-yank }
 
-vi-yank-whole-line-clipboard(){ __yank-clipboard zle-vi-yank-whole-line }
+vi-yank-whole-line-clipboard(){ __yank-clipboard .vi-yank-whole-line }
 
-vi-yank-eol-clipboard(){ __yank-clipboard zle-vi-yank-eol }
+vi-yank-eol-clipboard(){ __yank-clipboard .vi-yank-eol }
 # }}}
 # {{{ shadow all put commands
 __paste-clipboard(){
 	(( $+_system_register )) || zle "$1"
 	CUTBUFFER="$(system-clipboard-get "$_system_register")"
-	zle vi-set-buffer ''
+	zle .vi-set-buffer ''
 	zle "$1"
 	unset _system_register
 }
 
-vi-put-after-clipboard(){ __paste-clipboard vi-put-after }
+vi-put-after-clipboard(){ __paste-clipboard .vi-put-after }
 
-vi-put-before-clipboard(){ __paste-clipboard vi-put-before }
+vi-put-before-clipboard(){ __paste-clipboard .vi-put-before }
 # }}}
 # {{{ shadow vi-set-buffer
 vi-set-buffer-clipboard(){
@@ -91,19 +91,20 @@ vi-set-buffer-clipboard(){
 		[+*]) _system_register="$v" ;;
 		*)
 			unset _system_register
-			zle vi-set-buffer "$v"
+			zle .vi-set-buffer "$v"
 		;;
 	esac
 }
 # }}}
-# {{{ register new functions
-for fn in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
+# {{{ register new widgets
+for w in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
 	vi-change vi-change-eol vi-change-whole-line \
 	vi-yank vi-yank-whole-line vi-yank-eol \
 	vi-put-after vi-put-before vi-set-buffer
 do
-	zle -A "$fn" "zle-$fn"
-	zle -N "$fn" "${fn}-clipboard"
+	# TODO: best practice?
+	# overwrite old widgets
+	zle -N "$w" "${w}-clipboard"
 done
 # }}}
 # vim:foldmethod=marker
