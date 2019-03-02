@@ -1,7 +1,9 @@
 # {{{ set system clipboard
-(( $+DISPLAY | $+WAYLAND_DISPLAY )) || return
 zmodload zsh/parameter
-if (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
+if (( $+commands[termux-clipboard-get] )); then
+	system-clipboard-get(){ termux-clipboard-get }
+	system-clipboard-set(){ termux-clipboard-set }
+elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
 	system-clipboard-get(){
 		case "$1" in
 			'*') wl-paste -p -n ;;
@@ -39,6 +41,7 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 		esac
 	}
 fi
+(( $+functions[system-clipboard-get] )) || return
 # }}}
 # {{{ shadow all yank commands
 __yank-clipboard(){
