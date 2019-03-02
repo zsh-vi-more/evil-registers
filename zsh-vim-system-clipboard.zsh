@@ -99,11 +99,11 @@ vi-set-buffer-clipboard(){
 	local v
 	read -k 1 v
 	case $v in
-		[+*]) _system_register="$v" ;;
-		*)
+		''|[a-zA-Z0-9_])
 			unset _system_register
 			zle .vi-set-buffer "$v"
 		;;
+		*) _system_register="$v" ;;
 	esac
 }
 # }}}
