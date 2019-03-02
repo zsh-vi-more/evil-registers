@@ -6,3 +6,7 @@ Access system clipboard under the `vicmd` keymap with `"+` and `"*`.
 - xclip
 - xsel
 - wl-clipboard
+
+## Similar Projects
+
+- [kutsan/zsh-system-clipboard](https://github.com/kutsan/zsh-system-clipboard)
