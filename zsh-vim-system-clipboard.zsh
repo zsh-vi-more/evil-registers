@@ -42,7 +42,7 @@ fi
 # }}}
 # {{{ shadow all yank commands
 __yank-clipboard(){
-	if (( $+_system_register )); then
+	if ! (( $+_system_register )); then
 		zle "$1"
 		return "$?"
 	fi
@@ -77,7 +77,7 @@ vi-yank-eol-clipboard(){ __yank-clipboard .vi-yank-eol }
 # }}}
 # {{{ shadow all put commands
 __paste-clipboard(){
-	if (( $+_system_register )); then
+	if ! (( $+_system_register )); then
 		zle "$1"
 		return "$?"
 	fi
