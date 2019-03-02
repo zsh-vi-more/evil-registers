@@ -42,7 +42,10 @@ fi
 # }}}
 # {{{ shadow all yank commands
 __yank-clipboard(){
-	(( $+_system_register )) || zle "$1"
+	if (( $+_system_register )); then
+		zle "$1"
+		return "$?"
+	fi
 	zle .vi-set-buffer x
 	local x
 	x=$registers[x]
@@ -74,7 +77,10 @@ vi-yank-eol-clipboard(){ __yank-clipboard .vi-yank-eol }
 # }}}
 # {{{ shadow all put commands
 __paste-clipboard(){
-	(( $+_system_register )) || zle "$1"
+	if (( $+_system_register )); then
+		zle "$1"
+		return "$?"
+	fi
 	CUTBUFFER="$(system-clipboard-get "$_system_register")"
 	zle .vi-set-buffer ''
 	zle "$1"
