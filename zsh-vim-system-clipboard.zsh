@@ -1,51 +1,35 @@
 # {{{ set system clipboard
 zmodload zsh/parameter
+declare -A _system_paste_handlers
+declare -A _system_copy_handlers
 if (( $+commands[termux-clipboard-get] )); then
-	system-clipboard-get(){ termux-clipboard-get }
-	system-clipboard-set(){ termux-clipboard-set }
+	_system_paste_handlers['*']="${_system_paste_handlers['*']:-'termux-clipboard-get'}"
+	_system_paste_handlers['+']="${_system_paste_handlers['+']:-'termux-clipboard-get'}"
+	_system_copy_handlers['*']="${_system_copy_handlers['*']:-'termux-clipboard-set'}"
+	_system_copy_handlers['+']="${_system_copy_handlers['+']:-'termux-clipboard-set'}"
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	system-clipboard-get(){
-		case "$1" in
-			'*') wl-paste -p -n ;;
-			*  ) wl-paste -n ;;
-		esac
-	}
-	
-	system-clipboard-set(){
-		case "$1" in
-			'*') wl-copy -p ;;
-			*  ) wl-copy ;;
-		esac
-	}
-
+	_system_paste_handlers['*']="${_system_paste_handlers['*']:-'wl-paste -p -n'}"
+	_system_paste_handlers['+']="${_system_paste_handlers['+']:-'wl-paste -n'}"
+	_system_copy_handlers['*']="${_system_copy_handlers['*']:-'wl-copy -p'}"
+	_system_copy_handlers['+']="${_system_copy_handlers['+']:-'wl-copy'}"
 elif (( $+DISPLAY & $+commands[xclip] )); then
-	system-clipboard-get(){
-		case "$1" in
-			'*') xclip -out ;;
-			*  ) xclip -selection clipboard -out ;;
-		esac
-	}
-
-	system-clipboard-set(){
-		case "$1" in
-			'*') xclip ;;
-			*  ) xclip -selection clipboard;;
-		esac
-	}
-
+	_system_paste_handlers['*']="${_system_paste_handlers['*']:-'xclip -out'}"
+	_system_paste_handlers['+']="${_system_paste_handlers['+']:-'xclip -selection clipboard -out'}"
+	_system_copy_handlers['*']="${_system_copy_handlers['*']:-'xclip'}"
+	_system_copy_handlers['+']="${_system_copy_handlers['+']:-'xclip -selection clipboard'}"
 elif (( $+DISPLAY & $+commands[xsel] )); then
-	system-clipboard-get system-clipboard-set(){
-		case "$1" in
-			'*') xsel ;;
-			*  ) xsel -b ;;
-		esac
-	}
+	_system_paste_handlers['*']="${_system_paste_handlers['*']:-'xsel -o'}"
+	_system_paste_handlers['+']="${_system_paste_handlers['+']:-'xsel -b -o'}"
+	_system_copy_handlers['*']="${_system_copy_handlers['*']:-'xsel -i'}"
+	_system_copy_handlers['+']="${_system_copy_handlers['+']:-'xsel -b -i'}"
 fi
-(( $+functions[system-clipboard-get] )) || return
+(( ${#_system_paste_handlers} + ${#_system_copy_handlers} )) || return
 # }}}
 # {{{ shadow all yank commands
 __yank-clipboard(){
-	if ! (( $+_system_register )); then
+	# if no copy handler is registered for the given system register,
+	# then run with the default register
+	if ! (( ${+_system_copy_handlers[$_system_register]} )); then
 		zle "$1"
 		return "$?"
 	fi
@@ -53,7 +37,8 @@ __yank-clipboard(){
 	local x
 	x=$registers[x]
 	zle "$1"
-	system-clipboard-set "$_system_register" <<< "${registers[x]}"
+	# word splitting
+	${_system_copy_handlers[$_system_register]} <<< "${registers[x]}"
 	registers[x]="$x"
 	unset _system_register
 }
@@ -80,11 +65,12 @@ vi-yank-eol-clipboard(){ __yank-clipboard .vi-yank-eol }
 # }}}
 # {{{ shadow all put commands
 __paste-clipboard(){
-	if ! (( $+_system_register )); then
+	if ! (( ${+_system_paste_handlers[$_system_register]} )); then
 		zle "$1"
 		return "$?"
 	fi
-	CUTBUFFER="$(system-clipboard-get "$_system_register")"
+	# word splitting
+	CUTBUFFER="$(${_system_copy_handlers[$_system_register]})"
 	zle .vi-set-buffer ''
 	zle "$1"
 	unset _system_register
