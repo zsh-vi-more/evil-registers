@@ -37,8 +37,7 @@ __yank-clipboard(){
 	local x
 	x=$registers[x]
 	zle "$1"
-	# word splitting
-	${_system_copy_handlers[$_system_register]} <<< "${registers[x]}"
+	eval ${_system_copy_handlers[$_system_register]} <<< "${registers[x]}"
 	registers[x]="$x"
 	unset _system_register
 }
@@ -70,7 +69,7 @@ __paste-clipboard(){
 		return "$?"
 	fi
 	# word splitting
-	CUTBUFFER="$(${_system_copy_handlers[$_system_register]})"
+	CUTBUFFER="$(eval ${_system_paste_handlers[$_system_register]})"
 	zle .vi-set-buffer ''
 	zle "$1"
 	unset _system_register
