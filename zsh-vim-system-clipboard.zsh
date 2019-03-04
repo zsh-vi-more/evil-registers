@@ -2,30 +2,28 @@
 zmodload zsh/parameter
 declare -A _system_paste_handlers
 declare -A _system_copy_handlers
-(){
-x='*' # only way to set element with '*' as key
+# "(e)*" to remove special meaning of "*"
 if (( $+commands[termux-clipboard-get] )); then
-	_system_paste_handlers[$x]="${_system_paste_handlers[$x]:-termux-clipboard-get}"
+	_system_paste_handlers[(e)*]="${_system_paste_handlers[(e)*]:-termux-clipboard-get}"
 	_system_paste_handlers[+]="${_system_paste_handlers[+]:-termux-clipboard-get}"
-	_system_copy_handlers[$x]="${_system_copy_handlers[$x]:-termux-clipboard-set}"
+	_system_copy_handlers[(e)*]="${_system_copy_handlers[(e)*]:-termux-clipboard-set}"
 	_system_copy_handlers[+]="${_system_copy_handlers[+]:-termux-clipboard-set}"
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	_system_paste_handlers[$x]="${_system_paste_handlers[$x]:-wl-paste -p -n}"
+	_system_paste_handlers[(e)*]="${_system_paste_handlers[(e)*]:-wl-paste -p -n}"
 	_system_paste_handlers[+]="${_system_paste_handlers[+]:-wl-paste -n}"
-	_system_copy_handlers[$x]="${_system_copy_handlers[$x]:-wl-copy -p}"
+	_system_copy_handlers[(e)*]="${_system_copy_handlers[(e)*]:-wl-copy -p}"
 	_system_copy_handlers[+]="${_system_copy_handlers[+]:-wl-copy}"
 elif (( $+DISPLAY & $+commands[xclip] )); then
-	_system_paste_handlers[$x]="${_system_paste_handlers[$x]:-xclip -out}"
+	_system_paste_handlers[(e)*]="${_system_paste_handlers[(e)*]:-xclip -out}"
 	_system_paste_handlers[+]="${_system_paste_handlers[+]:-xclip -selection clipboard -out}"
-	_system_copy_handlers[$x]="${_system_copy_handlers[$x]:-xclip}"
+	_system_copy_handlers[(e)*]="${_system_copy_handlers[(e)*]:-xclip}"
 	_system_copy_handlers[+]="${_system_copy_handlers[+]:-xclip -selection clipboard}"
 elif (( $+DISPLAY & $+commands[xsel] )); then
-	_system_paste_handlers[$x]="${_system_paste_handlers[$x]:-xsel -o}"
+	_system_paste_handlers[(e)*]="${_system_paste_handlers[(e)*]:-xsel -o}"
 	_system_paste_handlers[+]="${_system_paste_handlers[+]:-xsel -b -o}"
-	_system_copy_handlers[$x]="${_system_copy_handlers[$x]:-xsel -i}"
+	_system_copy_handlers[(e)*]="${_system_copy_handlers[(e)*]:-xsel -i}"
 	_system_copy_handlers[+]="${_system_copy_handlers[+]:-xsel -b -i}"
 fi
-}
 (( ${#_system_paste_handlers} + ${#_system_copy_handlers} )) || return
 # }}}
 # {{{ shadow all yank commands
