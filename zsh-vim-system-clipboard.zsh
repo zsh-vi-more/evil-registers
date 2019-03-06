@@ -26,22 +26,9 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 fi
 (( ${#zvsc_paste_handlers} + ${#zvsc_copy_handlers} )) || return
 # }}}
-# {{{ shadow all yank commands
-__zvsc-yank(){
-	# if no copy handler is registered for the given system register,
-	# then run with the default register
-	if ! (( ${+zvsc_copy_handlers[$_zvsc_register]} )); then
-		zle "$1"
-		return "$?"
-	fi
-	zle .vi-set-buffer x
-	local x
-	x=$registers[x]
-	zle "$1"
-	eval ${zvsc_copy_handlers[$_zvsc_register]} <<< "${registers[x]}"
-	registers[x]="$x"
-	unset _zvsc_register
-}
+# {{{ shadow all vi commands
+fpath+="${0:h}"
+autoload -Uz __zvsc-paste __zvsc-yank
 
 _zvsc-vi-delete(){ __zvsc-yank .vi-delete }
 
@@ -62,19 +49,6 @@ _zvsc-vi-yank(){ __zvsc-yank .vi-yank }
 _zvsc-vi-yank-whole-line(){ __zvsc-yank .vi-yank-whole-line }
 
 _zvsc-vi-yank-eol(){ __zvsc-yank .vi-yank-eol }
-# }}}
-# {{{ shadow all put commands
-__zvsc-paste(){
-	if ! (( ${+zvsc_paste_handlers[$_zvsc_register]} )); then
-		zle "$1"
-		return "$?"
-	fi
-	# word splitting
-	CUTBUFFER="$(eval ${zvsc_paste_handlers[$_zvsc_register]})"
-	zle .vi-set-buffer ''
-	zle "$1"
-	unset _zvsc_register
-}
 
 _zvsc-vi-put-after(){ __zvsc-paste .vi-put-after }
 

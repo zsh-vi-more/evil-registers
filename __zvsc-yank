@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+# if no copy handler is registered for the given system register,
+# then run with the default register
+if ! (( ${+zvsc_copy_handlers[$_zvsc_register]} )); then
+	zle "$1"
+	return "$?"
+fi
+zle .vi-set-buffer x
+local x
+x=$registers[x]
+zle "$1"
+eval ${zvsc_copy_handlers[$_zvsc_register]} <<< "${registers[x]}"
+registers[x]="$x"
+unset _zvsc_register
