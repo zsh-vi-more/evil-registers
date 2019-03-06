@@ -1,7 +1,7 @@
 # {{{ set system clipboard
 zmodload zsh/parameter
-declare -A zvsc_paste_handlers
-declare -A zvsc_copy_handlers
+declare -gA zvsc_paste_handlers
+declare -gA zvsc_copy_handlers
 # "(e)*" to remove special meaning of "*"
 if (( $+commands[termux-clipboard-get] )); then
 	zvsc_paste_handlers[(e)*]="${zvsc_paste_handlers[(e)*]:-termux-clipboard-get}"
