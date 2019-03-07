@@ -1,30 +1,30 @@
 # {{{ set system clipboard
 zmodload zsh/parameter
-declare -gA zvsc_paste_handlers
-declare -gA zvsc_copy_handlers
+declare -gA ZSH_VIM_SYSTEM_PASTE_HANDLERS
+declare -gA ZSH_VIM_SYSTEM_COPY_HANDLERS
 # "(e)*" to remove special meaning of "*"
 if (( $+commands[termux-clipboard-get] )); then
-	zvsc_paste_handlers[(e)*]="${zvsc_paste_handlers[(e)*]:-termux-clipboard-get}"
-	zvsc_paste_handlers[+]="${zvsc_paste_handlers[+]:-termux-clipboard-get}"
-	zvsc_copy_handlers[(e)*]="${zvsc_copy_handlers[(e)*]:-termux-clipboard-set}"
-	zvsc_copy_handlers[+]="${zvsc_copy_handlers[+]:-termux-clipboard-set}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]:-termux-clipboard-get}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]:-termux-clipboard-get}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]:-termux-clipboard-set}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[+]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[+]:-termux-clipboard-set}"
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	zvsc_paste_handlers[(e)*]="${zvsc_paste_handlers[(e)*]:-wl-paste -p -n}"
-	zvsc_paste_handlers[+]="${zvsc_paste_handlers[+]:-wl-paste -n}"
-	zvsc_copy_handlers[(e)*]="${zvsc_copy_handlers[(e)*]:-wl-copy -p}"
-	zvsc_copy_handlers[+]="${zvsc_copy_handlers[+]:-wl-copy}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]:-wl-paste -p -n}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]:-wl-paste -n}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]:-wl-copy -p}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[+]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[+]:-wl-copy}"
 elif (( $+DISPLAY & $+commands[xclip] )); then
-	zvsc_paste_handlers[(e)*]="${zvsc_paste_handlers[(e)*]:-xclip -out}"
-	zvsc_paste_handlers[+]="${zvsc_paste_handlers[+]:-xclip -selection clipboard -out}"
-	zvsc_copy_handlers[(e)*]="${zvsc_copy_handlers[(e)*]:-xclip}"
-	zvsc_copy_handlers[+]="${zvsc_copy_handlers[+]:-xclip -selection clipboard}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]:-xclip -out}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]:-xclip -selection clipboard -out}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]:-xclip}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[+]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[+]:-xclip -selection clipboard}"
 elif (( $+DISPLAY & $+commands[xsel] )); then
-	zvsc_paste_handlers[(e)*]="${zvsc_paste_handlers[(e)*]:-xsel -o}"
-	zvsc_paste_handlers[+]="${zvsc_paste_handlers[+]:-xsel -b -o}"
-	zvsc_copy_handlers[(e)*]="${zvsc_copy_handlers[(e)*]:-xsel -i}"
-	zvsc_copy_handlers[+]="${zvsc_copy_handlers[+]:-xsel -b -i}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[(e)*]:-xsel -o}"
+	ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]="${ZSH_VIM_SYSTEM_PASTE_HANDLERS[+]:-xsel -b -o}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[(e)*]:-xsel -i}"
+	ZSH_VIM_SYSTEM_COPY_HANDLERS[+]="${ZSH_VIM_SYSTEM_COPY_HANDLERS[+]:-xsel -b -i}"
 fi
-(( ${#zvsc_paste_handlers} + ${#zvsc_copy_handlers} )) || return
+(( ${#ZSH_VIM_SYSTEM_PASTE_HANDLERS} + ${#ZSH_VIM_SYSTEM_COPY_HANDLERS} )) || return
 # }}}
 # {{{ shadow all vi commands
 fpath+="${0:h}"

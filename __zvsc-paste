@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh
-if ! (( ${+zvsc_paste_handlers[$_zvsc_register]} )); then
+if ! (( ${+ZSH_VIM_SYSTEM_PASTE_HANDLERS[$_zvsc_register]} )); then
 	zle "$1"
 	return "$?"
 fi
 # word splitting
-CUTBUFFER="$(eval ${zvsc_paste_handlers[$_zvsc_register]})"
+CUTBUFFER="$(eval ${ZSH_VIM_SYSTEM_PASTE_HANDLERS[$_zvsc_register]})"
 zle .vi-set-buffer ''
 zle "$1"
 unset _zvsc_register

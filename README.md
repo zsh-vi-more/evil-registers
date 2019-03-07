@@ -13,15 +13,15 @@ If you have a clipboard (or any other function which you want to act as one),
 you can register it by adding it to the associative arrays:
 
 ```zsh
-zvsc_copy_handlers[$key]="your-command"
-zvsc_paste_handlers[$key]="your-command"
+ZSH_VIM_SYSTEM_COPY_HANDLERS[$key]="your-command"
+ZSH_VIM_SYSTEM_PASTE_HANDLERS[$key]="your-command"
 ```
 
 `your-command` will be `eval`d.
 As an example, a simple one-directional append-to-text-file board can be implemented:
 
 ```zsh
-zvsc_copy_handlers[/]=">> $HOME/.scraps"
+ZSH_VIM_SYSTEM_COPY_HANDLERS[/]=">> $HOME/.scraps"
 ```
 Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 
