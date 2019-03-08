@@ -1,10 +1,22 @@
 #!/usr/bin/env zsh
-if ! (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
-	zle "$1"
-	return "$?"
-fi
-# word splitting
-CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
-zle .vi-set-buffer ''
-zle "$1"
-unset _evil_register
+case $_vi_register in
+	''|[0-9_]) zle "$1" ;;
+	[a-zA-Z])
+		case $EVIL_SYNC_EDITOR in
+			nvim*|neovim*|nvr)
+				local reg
+				reg="$(nvr --nostart -s --remote-expr "getreg(\"$_vi_register\")")"
+				(( $#reg )) && registers[$_vi_register]="$reg"
+			;;
+		esac
+		zle "$1"
+	;;
+	*)
+		if (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
+			CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
+			zle .vi-set-buffer ''
+		fi
+		zle "$1"
+	;;
+esac
+unset _vi_register
