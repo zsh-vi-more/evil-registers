@@ -1,14 +1,46 @@
 #!/usr/bin/env zsh
-# if no copy handler is registered for the given system register,
-# then run with the default register
-if ! (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
+case $_evil_register in
+
+''|[0-9_]) zle "$1" ;;
+[a-z]) # replace
 	zle "$1"
-	return "$?"
-fi
-zle .vi-set-buffer x
-local x
-x=$registers[x]
-zle "$1"
-eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
-registers[x]="$x"
+	case $EVIL_SYNC_EDITOR in
+		nvim*|neovim*|nvr)
+			nvr --nostart --remote-silent -c "let @$_evil_register = \"$(sed "s/[\\\"']/\\\&/g")\""
+		;;
+	esac
+;;
+[A-Z]) # append
+	case $EVIL_SYNC_EDITOR in
+		nvim*|neovim*|nvr)
+			_evil_register="${_evil_register:l}"
+			zle .vi-set-buffer "$_evil_register"
+			local old
+			old="${registers[$_evil_register]}"
+			zle "$1"
+			# append to nvim register
+			nvr --nostart --remote-silent -c \
+				"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\"" \
+				<<< "${registers[$_evil_register]}"
+			# append to zsh register
+			registers[$vi_register]="$old${registers[$vi_register]}"
+		;;
+		*) zle "$1" ;;
+	esac
+;;
+*)
+	if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
+		zle .vi-set-buffer x
+		local x
+		x="${registers[x]}"
+		zle "$1"
+		eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
+		registers[x]="$x"
+	else
+		zle "$1"
+	fi
+;;
+
+esac
+
 unset _evil_register
