@@ -6,6 +6,7 @@ Access external clipboards in vi-mode keymaps.
 - xclip
 - xsel
 - wl-clipboard
+- termux-clipboard
 
 ## Extensions:
 
