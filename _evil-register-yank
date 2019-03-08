@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # if no copy handler is registered for the given system register,
 # then run with the default register
-if ! (( ${+ZSH_VIM_SYSTEM_COPY_HANDLERS[$_zvsc_register]} )); then
+if ! (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
 	zle "$1"
 	return "$?"
 fi
@@ -9,6 +9,6 @@ zle .vi-set-buffer x
 local x
 x=$registers[x]
 zle "$1"
-eval ${ZSH_VIM_SYSTEM_COPY_HANDLERS[$_zvsc_register]} <<< "${registers[x]}"
+eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
 registers[x]="$x"
-unset _zvsc_register
+unset _evil_register

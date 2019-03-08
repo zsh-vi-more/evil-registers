@@ -1,5 +1,5 @@
-# Zsh Vim system clipboard
-Access system clipboards under the `vicmd` keymap with `"+` and `"*`.
+# Zsh Evil Registers
+Access external clipboards in vi-mode keymaps.
 
 ## Supported interfaces:
 
@@ -13,15 +13,15 @@ If you have a clipboard (or any other function which you want to act as one),
 you can register it by adding it to the associative arrays:
 
 ```zsh
-ZSH_VIM_SYSTEM_COPY_HANDLERS[$key]="your-command"
-ZSH_VIM_SYSTEM_PASTE_HANDLERS[$key]="your-command"
+ZSH_EVIL_COPY_HANDLERS[$key]="your-command"
+ZSH_EVIL_PASTE_HANDLERS[$key]="your-command"
 ```
 
 `your-command` will be `eval`d.
 As an example, a simple one-directional append-to-text-file board can be implemented:
 
 ```zsh
-ZSH_VIM_SYSTEM_COPY_HANDLERS[/]=">> $HOME/.scraps"
+ZSH_EVIL_COPY_HANDLERS[/]=">> $HOME/.scraps"
 ```
 Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 

@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+if ! (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
+	zle "$1"
+	return "$?"
+fi
+# word splitting
+CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
+zle .vi-set-buffer ''
+zle "$1"
+unset _evil_register
