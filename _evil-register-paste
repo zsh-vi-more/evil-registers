@@ -8,6 +8,12 @@ case $_vi_register in
 				reg="$(nvr --nostart -s --remote-expr "getreg(\"$_vi_register\")")"
 				(( $#reg )) && registers[$_vi_register]="$reg"
 			;;
+			vim*)
+				local reg
+				[[ $(vim --version) = *+clientserver* ]] &&
+					reg="$(vim --remote-expr "getreg(\"$_vi_register\")")"
+				(( $#reg )) && registers[$_vi_register]="$reg"
+			;;
 		esac
 		zle "$1"
 	;;
