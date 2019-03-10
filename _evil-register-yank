@@ -15,22 +15,31 @@ case $_evil_register in
 	esac
 ;;
 [A-Z]) # append
-	case $EVIL_SYNC_EDITOR in
+	if ! typeset +f _evil-remote-append >/dev/null; then
+		case $EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
-			_evil_register="${_evil_register:l}"
-			zle .vi-set-buffer "$_evil_register"
-			local old
-			old="${registers[$_evil_register]}"
+			(( $+commands[nvr] )) &&
+				_evil-remote-append(){
+					nvr --nostart --remote-silent -c \
+					"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\""
+				}
+			;;
+		*)
+			# no match found, do default zle and exit
 			zle "$1"
-			# append to nvim register
-			nvr --nostart --remote-silent -c \
-				"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\"" \
-				<<< "${registers[$_evil_register]}"
-			# append to zsh register
-			registers[$vi_register]="$old${registers[$vi_register]}"
-		;;
-		*) zle "$1" ;;
-	esac
+			unset _evil_register
+			return
+			;;
+		esac
+	fi
+	_evil_register="${_evil_register:l}"
+	zle .vi-set-buffer "$_evil_register"
+	local old="${registers[$_evil_register]}"
+	zle "$1"
+	# append to remote register
+	_evil-remote-append <<< "${registers[$_evil_register]}"
+	# append to zsh register
+	registers[$vi_register]="$old${registers[$vi_register]}"
 ;;
 *)
 	if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
