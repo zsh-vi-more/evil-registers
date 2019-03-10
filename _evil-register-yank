@@ -8,6 +8,10 @@ case $_evil_register in
 		nvim*|neovim*|nvr)
 			nvr --nostart --remote-silent -c "let @$_evil_register = \"$(sed "s/[\\\"']/\\\&/g")\""
 		;;
+		vim*)
+			[[ $(vim --version) = *+clientserver* ]] &&
+				vim --servername "${VIMSERVER:=${"$(vim --serverlist)"%%$'\n'*}}" --remote-send "let @$_evil_register = \"$(sed "s/[\\\"']/\\\&/g")\""
+		;;
 	esac
 ;;
 [A-Z]) # append
