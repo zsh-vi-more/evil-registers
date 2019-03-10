@@ -24,6 +24,14 @@ case $_evil_register in
 					"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\""
 				}
 			;;
+		vim*)
+			# parse version to detect server support
+			[[ $(vim --version) = *+clientserver* ]] &&
+				_evil-remote-append(){
+					vim --servername "${VIMSERVER:=${"$(vim --serverlist)"%%$'\n'*}}" --remote-silent -c \
+					"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\""
+				}
+			;;
 		*)
 			# no match found, do default zle and exit
 			zle "$1"
