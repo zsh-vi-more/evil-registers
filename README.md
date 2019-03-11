@@ -1,12 +1,29 @@
 # Zsh Evil Registers
-Access external clipboards in vi-mode keymaps.
+Access external clipboards in vi-mode keymaps,
+and synchronize registers to your favorite editors.
 
-## Supported interfaces:
+## Usage Examples
+
+- Yank a word to the system clipboard with `"+yaw`
+- Paste from the system primary selection (if supported) with `"*p`
+- If `ZSH_EVIL_SYNC_EDITOR` is set to a supported editor:
+  - Delete the current line to your editor's register `a`: `"add`
+  - Append the text [within quotes](https://github.com/zsh-vi-more/vi-motions) to your editor's register `q`: `"Qyi"`
+  - Put the text from your editor's register `r` before your cursor: `"rP`
+
+## Supported interfaces
+
+#### System Clipboards
 
 - xclip
 - xsel
 - wl-clipboard
 - termux-clipboard
+
+#### Editor Clipboard Sync
+
+- Neovim (requires `nvr`)
+- Vim (requires +clientserver support)
 
 ## Extensions:
 
@@ -20,7 +37,7 @@ ZSH_EVIL_PASTE_HANDLERS[$key]="your-command"
 
 `your-command` will be `eval`d.
 If you define a function on a normal-use register (examples: `a`, `T`, `3`),
-then it will *override* its normal functionality.
+then it will *override* its normal functionality, including the synchronization offered by this plugin.
 As an example, a simple one-directional append-to-text-file board can be implemented:
 
 ```zsh
