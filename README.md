@@ -1,5 +1,17 @@
 # Zsh Evil Registers
-Access external clipboards in vi-mode keymaps.
+Access external clipboards in `vicmd` or `viopp` keymaps.
+
+If you have a supported clipboard program, simply use your familiar vim bindings:
+- `"+` to specify the clipboard selection
+- `"*` to specify the primary selection (the same as `"+` in some cases)
+
+If you have a clipboard which is not supported, simply add it:
+```zsh
+ZSH_EVIL_COPY_HANDLERS[+]="program args"
+ZSH_EVIL_PASTE_HANDLERS[+]="program args"
+```
+
+Then send us a pull request! We'd love to have wider support.
 
 ## Supported interfaces:
 
