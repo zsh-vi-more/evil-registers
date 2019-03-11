@@ -6,7 +6,7 @@ case $_evil_register in
 	zle "$1"
 	case $EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
-			nvr --nostart --remote-silent -c "let @$_evil_register = \"$(sed "s/[\\\"']/\\\&/g")\""
+			nvr -s --nostart --remote-silent -c "let @$_evil_register = \"$(sed "s/[\\\"']/\\\&/g")\""
 		;;
 		vim*)
 			[[ $(vim --version) = *+clientserver* ]] &&
@@ -20,7 +20,7 @@ case $_evil_register in
 		nvim*|neovim*|nvr)
 			(( $+commands[nvr] )) &&
 				_evil-remote-append(){
-					nvr --nostart --remote-silent -c \
+					nvr -s --nostart --remote-silent -c \
 					"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\""
 				}
 			;;
