@@ -1,14 +1,52 @@
 #!/usr/bin/env zsh
-# if no copy handler is registered for the given system register,
-# then run with the default register
-if ! (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
+
+# Let handlers override normal [[:alnum:]_] registers
+if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
+	zle .vi-set-buffer x
+	local x
+	x="${registers[x]}"
 	zle "$1"
-	return "$?"
+	eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
+	registers[x]="$x"
+	return
 fi
-zle .vi-set-buffer x
-local x
-x=$registers[x]
-zle "$1"
-eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
-registers[x]="$x"
+
+case $_evil_register in
+
+''|[0-9_]) zle "$1" ;;
+[a-zA-Z]) # sync
+	if ! typeset +f _evil-remote-set >/dev/null; then
+		case $ZSH_EVIL_SYNC_EDITOR in
+		nvim*|neovim*|nvr)
+			(( $+commands[nvr] )) &&
+				_evil-remote-set(){
+					nvr -s --nostart --remote-expr \
+					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
+				}
+			;;
+		vim*)
+			# parse version to detect server support
+			[[ $(vim --version) = *+clientserver* ]] &&
+				_evil-remote-set(){
+					vim --servername "${VIMSERVER:=${"$(vim --serverlist)"%%$'\n'*}}" --remote-expr \
+					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
+				}
+			;;
+		*)
+			# no match found, do default zle and exit
+			zle "$1"
+			unset _evil_register
+			return
+			;;
+		esac
+
+	fi
+	# append or set remote
+	zle "$1"
+	_evil-remote-set "$_evil_register"
+;;
+*) zle "$1" ;;
+
+esac
+
 unset _evil_register

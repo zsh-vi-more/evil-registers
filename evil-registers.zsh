@@ -56,15 +56,9 @@ _evil-vi-put-before(){ _evil-register-paste .vi-put-before }
 # }}}
 # {{{ shadow vi-set-buffer
 _evil-vi-set-buffer(){
-	local v
-	read -k 1 v
-	case $v in
-		''|[a-zA-Z0-9_])
-			unset _evil_register
-			zle .vi-set-buffer "$v"
-		;;
-		*) _evil_register="$v" ;;
-	esac
+	read -k 1
+	_evil_register="$REPLY"
+	zle .vi-set-buffer "$REPLY"
 }
 # }}}
 # {{{ register new widgets
