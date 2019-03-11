@@ -4,7 +4,7 @@ if (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
 	zle .vi-set-buffer ''
 elif [[ $_vi_register = [a-zA-Z] ]]; then
 	BUFFER="$_vi_register"
-	case $EVIL_SYNC_EDITOR in
+	case $ZSH_EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
 			local reg
 			reg="$(nvr --nostart -s --remote-expr "getreg(\"$_vi_register\")")"

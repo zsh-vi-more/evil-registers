@@ -16,7 +16,7 @@ case $_evil_register in
 ''|[0-9_]) zle "$1" ;;
 [a-zA-Z]) # sync
 	if ! typeset +f _evil-remote-set >/dev/null; then
-		case $EVIL_SYNC_EDITOR in
+		case $ZSH_EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
 			(( $+commands[nvr] )) &&
 				_evil-remote-set(){
