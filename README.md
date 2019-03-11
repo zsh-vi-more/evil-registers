@@ -19,6 +19,8 @@ ZSH_EVIL_PASTE_HANDLERS[$key]="your-command"
 ```
 
 `your-command` will be `eval`d.
+If you define a function on a normal-use register (examples: `a`, `T`, `3`),
+then it will *override* its normal functionality.
 As an example, a simple one-directional append-to-text-file board can be implemented:
 
 ```zsh

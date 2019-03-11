@@ -1,4 +1,16 @@
 #!/usr/bin/env zsh
+
+# Let handlers override normal [[:alnum:]_] registers
+if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
+	zle .vi-set-buffer x
+	local x
+	x="${registers[x]}"
+	zle "$1"
+	eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
+	registers[x]="$x"
+	return
+fi
+
 case $_evil_register in
 
 ''|[0-9_]) zle "$1" ;;
@@ -49,18 +61,7 @@ case $_evil_register in
 	# append to zsh register
 	registers[$vi_register]="$old${registers[$vi_register]}"
 ;;
-*)
-	if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
-		zle .vi-set-buffer x
-		local x
-		x="${registers[x]}"
-		zle "$1"
-		eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
-		registers[x]="$x"
-	else
-		zle "$1"
-	fi
-;;
+*) zle "$1" ;;
 
 esac
 
