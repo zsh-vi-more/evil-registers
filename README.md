@@ -20,7 +20,7 @@ and synchronize registers to your favorite editors.
 - wl-clipboard
 - termux-clipboard
 
-#### Editor Clipboard Sync
+#### Editor Register Sync
 
 - Neovim (requires `nvr`)
 - Vim (requires +clientserver support)
