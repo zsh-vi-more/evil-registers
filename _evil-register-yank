@@ -14,34 +14,22 @@ fi
 case $_evil_register in
 
 ''|[0-9_]) zle "$1" ;;
-[a-z]) # replace
-	zle "$1"
-	case $EVIL_SYNC_EDITOR in
-		nvim*|neovim*|nvr)
-			nvr -s --nostart --remote-silent -c "let @$_evil_register = \"$(sed "s/[\\\"']/\\\&/g")\""
-		;;
-		vim*)
-			[[ $(vim --version) = *+clientserver* ]] &&
-				vim --servername "${VIMSERVER:=${"$(vim --serverlist)"%%$'\n'*}}" --remote-send "let @$_evil_register = \"$(sed "s/[\\\"']/\\\&/g")\""
-		;;
-	esac
-;;
-[A-Z]) # append
-	if ! typeset +f _evil-remote-append >/dev/null; then
+[a-zA-Z]) # sync
+	if ! typeset +f _evil-remote-set >/dev/null; then
 		case $EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
 			(( $+commands[nvr] )) &&
-				_evil-remote-append(){
-					nvr -s --nostart --remote-silent -c \
-					"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\""
+				_evil-remote-set(){
+					nvr -s --nostart --remote-expr \
+					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
 			;;
 		vim*)
 			# parse version to detect server support
 			[[ $(vim --version) = *+clientserver* ]] &&
-				_evil-remote-append(){
-					vim --servername "${VIMSERVER:=${"$(vim --serverlist)"%%$'\n'*}}" --remote-silent -c \
-					"let @$_evil_register = @$_evil_register . \"$(sed "s/[\\\"']/\\\&/g")\""
+				_evil-remote-set(){
+					vim --servername "${VIMSERVER:=${"$(vim --serverlist)"%%$'\n'*}}" --remote-expr \
+					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
 			;;
 		*)
@@ -51,15 +39,11 @@ case $_evil_register in
 			return
 			;;
 		esac
+
 	fi
-	_evil_register="${_evil_register:l}"
-	zle .vi-set-buffer "$_evil_register"
-	local old="${registers[$_evil_register]}"
+	# append or set remote
 	zle "$1"
-	# append to remote register
-	_evil-remote-append <<< "${registers[$_evil_register]}"
-	# append to zsh register
-	registers[$vi_register]="$old${registers[$vi_register]}"
+	_evil-remote-set "$_evil_register"
 ;;
 *) zle "$1" ;;
 
