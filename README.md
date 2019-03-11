@@ -26,6 +26,41 @@ ZSH_EVIL_COPY_HANDLERS[/]=">> $HOME/.scraps"
 ```
 Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 
+## Installation
+
+**Antigen**:
+```zsh
+antigen bundle zsh-vi-more/evil-registerss
+antigen apply
+```
+
+**Zgen**:
+```zsh
+zgen load zsh-vi-more/evil-registers
+zgen save
+```
+
+
+**Zplug**:
+```zsh
+zplug zsh-vi-more/evil-registers
+```
+
+**Zplugin**:
+```zsh
+zplugin ice wait "0"
+zplugin light zsh-vi-more/evil-registers
+
+# Optionally, track the latest development version:
+zplugin ice wait "0" ver"dev"
+zplugin light zsh-vi-more/evil-registers
+```
+
+**Manually**: Clone the project, and then source it:
+```zsh
+source /path/to/evil-registers/evil-registers.zsh
+```
+
 ## Similar Projects
 
 - [kutsan/zsh-system-clipboard](https://github.com/kutsan/zsh-system-clipboard)
