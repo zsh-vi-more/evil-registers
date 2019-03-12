@@ -43,7 +43,7 @@ case $_evil_register in
 	fi
 	# append or set remote
 	zle "$1"
-	_evil-remote-set "$_evil_register"
+	_evil-remote-set "$_evil_register" &
 ;;
 *) zle "$1" ;;
 
