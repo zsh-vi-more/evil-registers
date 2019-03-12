@@ -2,21 +2,21 @@
 if (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
 	CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
 	zle .vi-set-buffer ''
-elif [[ $_vi_register = [a-zA-Z] ]]; then
-	BUFFER="$_vi_register"
+elif [[ $_evil_register = [a-zA-Z] ]]; then
+	BUFFER="$_evil_register"
 	case $ZSH_EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
 			local reg
-			reg="$(nvr --nostart -s --remote-expr "getreg(\"$_vi_register\")")"
-			(( $#reg )) && registers[$_vi_register]="$reg"
+			reg="$(nvr --nostart -s --remote-expr "getreg(\"$_evil_register\")")"
+			(( $#reg )) && registers[$_evil_register]="$reg"
 		;;
 		vim*)
 			local reg
 			[[ $(vim --version) = *+clientserver* ]] &&
-				reg="$(vim --remote-expr "getreg(\"$_vi_register\")")"
-			(( $#reg )) && registers[$_vi_register]="$reg"
+				reg="$(vim --remote-expr "getreg(\"$_evil_register\")")"
+			(( $#reg )) && registers[$_evil_register]="$reg"
 		;;
 	esac
 fi
 zle "$1"
-unset _vi_register
+unset _evil_register
