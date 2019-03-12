@@ -20,7 +20,7 @@ case $_evil_register in
 		nvim*|neovim*|nvr)
 			(( $+commands[nvr] )) &&
 				_evil-remote-set(){
-					timeout 10 -k 15 nvr -s --nostart --remote-expr \
+					timeout -k 15 10 nvr -s --nostart --remote-expr \
 					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
 			;;
@@ -28,7 +28,7 @@ case $_evil_register in
 			# parse version to detect server support
 			[[ $(vim --version) = *+clientserver* ]] &&
 				_evil-remote-set(){
-					timeout 10 -k 15 vim --servername "${VIMSERVER:="$ZSH_EVIL_SYNC_EDITOR"}" --remote-expr \
+					timeout -k 15 10 vim --servername "${VIMSERVER:="$ZSH_EVIL_SYNC_EDITOR"}" --remote-expr \
 					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
 			;;
