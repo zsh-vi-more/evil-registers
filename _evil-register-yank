@@ -20,15 +20,15 @@ case $_evil_register in
 		nvim*|neovim*|nvr)
 			(( $+commands[nvr] )) &&
 				_evil-remote-set(){
-					nvr -s --nostart --remote-expr \
+					timeout 10 -k 15 nvr -s --nostart --remote-expr \
 					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
 			;;
-		vim*)
+		(|g)vim*)
 			# parse version to detect server support
 			[[ $(vim --version) = *+clientserver* ]] &&
 				_evil-remote-set(){
-					vim --servername "${VIMSERVER:=${"$(vim --serverlist)"%%$'\n'*}}" --remote-expr \
+					timeout 10 -k 15 vim --servername "${VIMSERVER:="$ZSH_EVIL_SYNC_EDITOR"}" --remote-expr \
 					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
 			;;
@@ -43,7 +43,8 @@ case $_evil_register in
 	fi
 	# append or set remote
 	zle "$1"
-	_evil-remote-set "$_evil_register" &
+	# fork and run in subshell to supress job control messages
+	( _evil-remote-set "$_evil_register" & )
 ;;
 *) zle "$1" ;;
 
