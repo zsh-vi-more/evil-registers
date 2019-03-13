@@ -37,6 +37,11 @@ Then send us a pull request! We'd love to have wider support.
 - Neovim (requires `nvr`)
 - Vim (requires +clientserver support)
 
+
+## Usage:
+
+See a demo [here](https://asciinema.org/a/q0N73xBvkYDBhBjR8DmD5F78w)!
+
 ## Extensions:
 
 If you have a clipboard (or any other function which you want to act as one),
