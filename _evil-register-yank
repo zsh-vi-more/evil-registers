@@ -42,14 +42,15 @@ case $_evil_register in
 
 	fi
 	# append or set remote
+	local old
 	if [[ $_evil_register = [A-Z] ]]; then
 		zle .vi-set-buffer "${_evil_register:l}"
-		local old=$registers[${_evil_register:l}]
+		old=$registers[${_evil_register:l}]
 		zle "$1"
-		registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
 	else zle "$1"; fi
 	# fork and run in subshell to supress job control messages
 	( _evil-remote-set "$_evil_register" & )
+	registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
 ;;
 *) zle "$1" ;;
 
