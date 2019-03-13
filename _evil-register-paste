@@ -3,7 +3,6 @@ if (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
 	CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
 	zle .vi-set-buffer ''
 elif [[ $_evil_register = [a-zA-Z] ]]; then
-	BUFFER="$_evil_register"
 	case $ZSH_EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
 			local reg
