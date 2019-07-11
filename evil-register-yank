@@ -8,6 +8,7 @@ if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
 	zle "$1"
 	eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
 	registers[x]="$x"
+	unset _evil_register
 	return
 fi
 
