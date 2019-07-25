@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+local oldcutbuffer="$CUTBUFFER"
 if (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
 	CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
 	zle .vi-set-buffer ''
@@ -18,4 +19,5 @@ elif [[ $_evil_register = [a-zA-Z] ]]; then
 	esac
 fi
 zle "$1"
+CUTBUFFER="$oldcutbuffer"
 unset _evil_register
