@@ -3,7 +3,11 @@ local oldcutbuffer="$CUTBUFFER"
 if (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
 	CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
 	zle .vi-set-buffer ''
-elif [[ $_evil_register = / ]]; then
+elif [[ $_evil_register = '%' ]]; then
+	CUTBUFFER="$PWD"
+elif [[ $_evil_register = '#' ]]; then
+	CUTBUFFER="${${(f)$(dirs -lp)}[2]}"
+elif [[ $_evil_register = '/' ]]; then
 	CUTBUFFER="$LASTSEARCH"
 elif [[ $_evil_register = [a-zA-Z] ]]; then
 	case $ZSH_EVIL_SYNC_EDITOR in
