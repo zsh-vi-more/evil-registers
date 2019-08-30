@@ -28,31 +28,31 @@ fi
 # }}}
 # {{{ shadow all vi commands
 fpath+="${0:h}"
-autoload -Uz evil-register-paste evil-register-yank
+autoload -Uz evil-register::paste evil-register::yank
 
--evil-vi-delete(){ evil-register-yank .vi-delete }
+.evil-register::vi-delete(){ evil-register::yank .vi-delete }
 
--evil-vi-delete-char(){ evil-register-yank .vi-delete-char }
+.evil-register::vi-delete-char(){ evil-register::yank .vi-delete-char }
 
--evil-vi-kill-line(){ evil-register-yank .vi-kill-line }
+.evil-register::vi-kill-line(){ evil-register::yank .vi-kill-line }
 
--evil-vi-kill-eol(){ evil-register-yank .vi-kill-eol }
+.evil-register::vi-kill-eol(){ evil-register::yank .vi-kill-eol }
 
--evil-vi-change(){ evil-register-yank .vi-change }
+.evil-register::vi-change(){ evil-register::yank .vi-change }
 
--evil-vi-change-eol(){ evil-register-yank .vi-change-eol }
+.evil-register::vi-change-eol(){ evil-register::yank .vi-change-eol }
 
--evil-vi-change-whole-line(){ evil-register-yank .vi-change-whole-line }
+.evil-register::vi-change-whole-line(){ evil-register::yank .vi-change-whole-line }
 
--evil-vi-yank(){ evil-register-yank .vi-yank }
+.evil-register::vi-yank(){ evil-register::yank .vi-yank }
 
--evil-vi-yank-whole-line(){ evil-register-yank .vi-yank-whole-line }
+.evil-register::vi-yank-whole-line(){ evil-register::yank .vi-yank-whole-line }
 
--evil-vi-yank-eol(){ evil-register-yank .vi-yank-eol }
+.evil-register::vi-yank-eol(){ evil-register::yank .vi-yank-eol }
 
--evil-vi-put-after(){ evil-register-paste .vi-put-after }
+.evil-register::vi-put-after(){ evil-register::paste .vi-put-after }
 
--evil-vi-put-before(){ evil-register-paste .vi-put-before }
+.evil-register::vi-put-before(){ evil-register::paste .vi-put-before }
 # }}}
 # {{{ shadow vi-set-buffer
 -evil-vi-set-buffer(){
@@ -69,7 +69,7 @@ for w in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
 do
 	# TODO: best practice?
 	# overwrite old widgets
-	zle -N "$w" "-evil-${w}"
+	zle -N "$w" ".evil-register::${w}"
 done
 # }}}
 # vim:foldmethod=marker
