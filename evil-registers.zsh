@@ -55,7 +55,7 @@ autoload -Uz evil-register::paste evil-register::yank
 .evil-register::vi-put-before(){ evil-register::paste .vi-put-before }
 # }}}
 # {{{ shadow vi-set-buffer
--evil-vi-set-buffer(){
+.evil-register::vi-set-buffer(){
 	read -k 1
 	_evil_register="$REPLY"
 	zle .vi-set-buffer "$REPLY"
