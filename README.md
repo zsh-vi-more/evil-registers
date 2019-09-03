@@ -37,6 +37,8 @@ Then send us a pull request! We'd love to have wider support.
 - Neovim (requires `nvr`)
 - Vim (requires +clientserver support)
 
+Also, the `%` read-only register prints
+the full path of the currently opened file in the editor.
 
 ## Usage:
 
