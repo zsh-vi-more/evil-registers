@@ -6,13 +6,17 @@ If you have a supported clipboard program, simply use your familiar vim bindings
 - `"+` to specify the clipboard selection
 - `"*` to specify the primary selection (the same as `"+` in some cases)
 
-If you have a clipboard which is not supported, simply add it:
+If you have a clipboard which is not supported,
+_but_ there is a program which can set the clipboard from `stdin`,
+and a program which can print the contents of the clipboard on `stdout`,
+you can set the appropriate handlers like so:
 ```zsh
-ZSH_EVIL_COPY_HANDLERS[+]="program args"
-ZSH_EVIL_PASTE_HANDLERS[+]="program args"
+ZSH_EVIL_COPY_HANDLERS[+]="clipboard-program --read-from-stdin"
+ZSH_EVIL_PASTE_HANDLERS[+]="clipboard-program --print-to-stdout"
 ```
 
-Then send us a pull request! We'd love to have wider support.
+Then send us a pull request or report an issue!
+We'd love to support more clipboards.
 
 ## Usage Examples
 
@@ -27,12 +31,17 @@ Then send us a pull request! We'd love to have wider support.
 
 #### System Clipboards
 
+The following programs are used to set the system clipboard(s)
+with registers `+` and `*`.
+
 - xclip
 - xsel
 - wl-clipboard
-- termux-clipboard
+- termux-clipboard (Android has no "selection", so both `+` and `*` operate on the same clipboard)
 
 #### Editor Register Sync
+
+Synchronization of the alphabetic registers is supported with these editors:
 
 - Neovim (requires `nvr`)
 - Vim (requires +clientserver support)
