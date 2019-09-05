@@ -24,7 +24,6 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	ZSH_EVIL_COPY_HANDLERS[(e)*]="${ZSH_EVIL_COPY_HANDLERS[(e)*]:-xsel -i}"
 	ZSH_EVIL_COPY_HANDLERS[+]="${ZSH_EVIL_COPY_HANDLERS[+]:-xsel -b -i}"
 fi
-(( ${#ZSH_EVIL_PASTE_HANDLERS} + ${#ZSH_EVIL_COPY_HANDLERS} )) || return
 # }}}
 # {{{ shadow all vi commands
 fpath+="${0:h}"
