@@ -29,32 +29,32 @@ fi
 fpath+="${0:h}"
 autoload -Uz evil-register::paste evil-register::yank
 
-.evil-register::vi-delete(){ evil-register::yank .vi-delete }
+.evil-registers::vi-delete(){ .evil-registers::yank .vi-delete }
 
-.evil-register::vi-delete-char(){ evil-register::yank .vi-delete-char }
+.evil-registers::vi-delete-char(){ .evil-registers::yank .vi-delete-char }
 
-.evil-register::vi-kill-line(){ evil-register::yank .vi-kill-line }
+.evil-registers::vi-kill-line(){ .evil-registers::yank .vi-kill-line }
 
-.evil-register::vi-kill-eol(){ evil-register::yank .vi-kill-eol }
+.evil-registers::vi-kill-eol(){ .evil-registers::yank .vi-kill-eol }
 
-.evil-register::vi-change(){ evil-register::yank .vi-change }
+.evil-registers::vi-change(){ .evil-registers::yank .vi-change }
 
-.evil-register::vi-change-eol(){ evil-register::yank .vi-change-eol }
+.evil-registers::vi-change-eol(){ .evil-registers::yank .vi-change-eol }
 
-.evil-register::vi-change-whole-line(){ evil-register::yank .vi-change-whole-line }
+.evil-registers::vi-change-whole-line(){ .evil-registers::yank .vi-change-whole-line }
 
-.evil-register::vi-yank(){ evil-register::yank .vi-yank }
+.evil-registers::vi-yank(){ .evil-registers::yank .vi-yank }
 
-.evil-register::vi-yank-whole-line(){ evil-register::yank .vi-yank-whole-line }
+.evil-registers::vi-yank-whole-line(){ .evil-registers::yank .vi-yank-whole-line }
 
-.evil-register::vi-yank-eol(){ evil-register::yank .vi-yank-eol }
+.evil-registers::vi-yank-eol(){ .evil-registers::yank .vi-yank-eol }
 
-.evil-register::vi-put-after(){ evil-register::paste .vi-put-after }
+.evil-registers::vi-put-after(){ .evil-registers::paste .vi-put-after }
 
-.evil-register::vi-put-before(){ evil-register::paste .vi-put-before }
+.evil-registers::vi-put-before(){ .evil-registers::paste .vi-put-before }
 # }}}
 # {{{ shadow vi-set-buffer
-.evil-register::vi-set-buffer(){
+.evil-registers::vi-set-buffer(){
 	read -k 1
 	_evil_register="$REPLY"
 	zle .vi-set-buffer "$REPLY"
@@ -68,7 +68,7 @@ for w in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
 do
 	# TODO: best practice?
 	# overwrite old widgets
-	zle -N "$w" ".evil-register::${w}"
+	zle -N "$w" ".evil-registers::${w}"
 done
 # }}}
 # vim:foldmethod=marker
