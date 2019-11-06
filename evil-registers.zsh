@@ -25,10 +25,15 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	ZSH_EVIL_COPY_HANDLERS[+]="${ZSH_EVIL_COPY_HANDLERS[+]:-xsel -b -i}"
 fi
 # }}}
+# {{{ Handle fpath/$0
+# ref: zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html#zero-handling
+0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+0="${${(M)0:#/*}:-$PWD/$0}"
+[[ $zsh_loaded_plugins[-1] != */evil-registers && -z $fpath[(r)${0:h}] ]] &&
+	fpath+=("${0:h}")
+autoload -Uz .evil-registers::{paste,yank} evil-registers_plugin_unload
+# }}}
 # {{{ shadow all vi commands
-fpath+="${0:h}"
-autoload -Uz evil-register::paste evil-register::yank
-
 .evil-registers::vi-delete(){ .evil-registers::yank .vi-delete }
 
 .evil-registers::vi-delete-char(){ .evil-registers::yank .vi-delete-char }
