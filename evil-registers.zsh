@@ -24,38 +24,42 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	ZSH_EVIL_COPY_HANDLERS[(e)*]="${ZSH_EVIL_COPY_HANDLERS[(e)*]:-xsel -i}"
 	ZSH_EVIL_COPY_HANDLERS[+]="${ZSH_EVIL_COPY_HANDLERS[+]:-xsel -b -i}"
 fi
-(( ${#ZSH_EVIL_PASTE_HANDLERS} + ${#ZSH_EVIL_COPY_HANDLERS} )) || return
+# }}}
+# {{{ Handle fpath/$0
+# ref: zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html#zero-handling
+0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+0="${${(M)0:#/*}:-$PWD/$0}"
+[[ $zsh_loaded_plugins[-1] != */evil-registers && -z $fpath[(r)${0:h}] ]] &&
+	fpath+=("${0:h}")
+autoload -Uz .evil-registers::{paste,yank} evil-registers_plugin_unload
 # }}}
 # {{{ shadow all vi commands
-fpath+="${0:h}"
-autoload -Uz _evil-register-paste _evil-register-yank
+.evil-registers::vi-delete(){ .evil-registers::yank .vi-delete }
 
-_evil-vi-delete(){ _evil-register-yank .vi-delete }
+.evil-registers::vi-delete-char(){ .evil-registers::yank .vi-delete-char }
 
-_evil-vi-delete-char(){ _evil-register-yank .vi-delete-char }
+.evil-registers::vi-kill-line(){ .evil-registers::yank .vi-kill-line }
 
-_evil-vi-kill-line(){ _evil-register-yank .vi-kill-line }
+.evil-registers::vi-kill-eol(){ .evil-registers::yank .vi-kill-eol }
 
-_evil-vi-kill-eol(){ _evil-register-yank .vi-kill-eol }
+.evil-registers::vi-change(){ .evil-registers::yank .vi-change }
 
-_evil-vi-change(){ _evil-register-yank .vi-change }
+.evil-registers::vi-change-eol(){ .evil-registers::yank .vi-change-eol }
 
-_evil-vi-change-eol(){ _evil-register-yank .vi-change-eol }
+.evil-registers::vi-change-whole-line(){ .evil-registers::yank .vi-change-whole-line }
 
-_evil-vi-change-whole-line(){ _evil-register-yank .vi-change-whole-line }
+.evil-registers::vi-yank(){ .evil-registers::yank .vi-yank }
 
-_evil-vi-yank(){ _evil-register-yank .vi-yank }
+.evil-registers::vi-yank-whole-line(){ .evil-registers::yank .vi-yank-whole-line }
 
-_evil-vi-yank-whole-line(){ _evil-register-yank .vi-yank-whole-line }
+.evil-registers::vi-yank-eol(){ .evil-registers::yank .vi-yank-eol }
 
-_evil-vi-yank-eol(){ _evil-register-yank .vi-yank-eol }
+.evil-registers::vi-put-after(){ .evil-registers::paste .vi-put-after }
 
-_evil-vi-put-after(){ _evil-register-paste .vi-put-after }
-
-_evil-vi-put-before(){ _evil-register-paste .vi-put-before }
+.evil-registers::vi-put-before(){ .evil-registers::paste .vi-put-before }
 # }}}
 # {{{ shadow vi-set-buffer
-_evil-vi-set-buffer(){
+.evil-registers::vi-set-buffer(){
 	read -k 1
 	_evil_register="$REPLY"
 	zle .vi-set-buffer "$REPLY"
@@ -69,7 +73,7 @@ for w in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
 do
 	# TODO: best practice?
 	# overwrite old widgets
-	zle -N "$w" "_evil-${w}"
+	zle -N "$w" ".evil-registers::${w}"
 done
 # }}}
 # vim:foldmethod=marker
