@@ -6,7 +6,6 @@ for w in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
 	vi-put-after vi-put-before vi-set-buffer
 do
 	zle -A ".$w" "$w"
-	unfunction ".evil-registers::$w"
 done
 # Unload functions
-unfunction .evil-registers::{paste,yank} evil-registers_plugin_unload
+unhash -f -m '.evil-registers*'
