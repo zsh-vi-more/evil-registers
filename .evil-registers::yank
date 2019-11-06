@@ -1,4 +1,6 @@
 #!/usr/bin/env zsh
+emulate -L zsh
+setopt extendedglob
 
 # Let handlers override normal [[:alnum:]_] registers
 if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
@@ -16,11 +18,12 @@ case $_evil_register in
 
 ''|[0-9_]) zle "$1" ;;
 [a-zA-Z]) # sync
-	if ! typeset +f .evil-register::remote-set >/dev/null; then
+	if ! typeset +f .evil-registers::remote-set >/dev/null; then
 		case $ZSH_EVIL_SYNC_EDITOR in
 		nvim*|neovim*|nvr)
 			(( $+commands[nvr] )) &&
-				.evil-register::remote-set(){
+				.evil-registers::remote-set(){
+					local MATCH MBEGIN MEND
 					timeout -k 15 10 nvr -s --nostart --remote-expr \
 					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
@@ -28,7 +31,9 @@ case $_evil_register in
 		(|g)vim*)
 			# parse version to detect server support
 			[[ $(vim --version) = *+clientserver* ]] &&
-				.evil-register::remote-set(){
+				.evil-registers::remote-set(){
+					local MATCH
+					local -i MBEGIN MEND
 					timeout -k 15 10 vim --servername "${VIMSERVER:="$ZSH_EVIL_SYNC_EDITOR"}" --remote-expr \
 					"setreg('$1', \"${${registers[${1:l}]}//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
@@ -50,7 +55,7 @@ case $_evil_register in
 		zle "$1"
 	else zle "$1"; fi
 	# fork and run in subshell to supress job control messages
-	( .evil-register::remote-set "$_evil_register" & )
+	( .evil-registers::remote-set "$_evil_register" & )
 	registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
 ;;
 *) zle "$1" ;;

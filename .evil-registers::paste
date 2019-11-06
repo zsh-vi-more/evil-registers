@@ -1,4 +1,6 @@
 #!/usr/bin/env zsh
+emulate -L zsh
+
 # _evil_sync_remote: currently vim/nvr ... --remote-expr
 (( $+_evil_sync_remote )) || case $ZSH_EVIL_SYNC_EDITOR in
 	(|g)vim*)
