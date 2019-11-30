@@ -78,7 +78,7 @@ Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 
 **Antigen**:
 ```zsh
-antigen bundle zsh-vi-more/evil-registerss
+antigen bundle zsh-vi-more/evil-registers
 antigen apply
 ```
 
