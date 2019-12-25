@@ -56,7 +56,8 @@ case $_evil_register in
 		zle "$1"
 	else zle "$1"; fi
 	# Use sched to execute without job control messages
-	sched +0 .evil-registers::remote-set "$_evil_register" "${registers[${_evil_register:l}]}"
+	# sched splits the parameters
+	sched +0 .evil-registers::remote-set "$_evil_register" "${(q)registers[${_evil_register:l}]}"
 	registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
 ;;
 *) zle "$1" ;;
