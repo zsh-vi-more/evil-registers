@@ -33,31 +33,6 @@ fi
 	fpath+=("${0:h}")
 autoload -Uz .evil-registers::{paste,yank} evil-registers_plugin_unload
 # }}}
-# {{{ shadow all vi commands
-.evil-registers::vi-delete(){ .evil-registers::yank .vi-delete }
-
-.evil-registers::vi-delete-char(){ .evil-registers::yank .vi-delete-char }
-
-.evil-registers::vi-kill-line(){ .evil-registers::yank .vi-kill-line }
-
-.evil-registers::vi-kill-eol(){ .evil-registers::yank .vi-kill-eol }
-
-.evil-registers::vi-change(){ .evil-registers::yank .vi-change }
-
-.evil-registers::vi-change-eol(){ .evil-registers::yank .vi-change-eol }
-
-.evil-registers::vi-change-whole-line(){ .evil-registers::yank .vi-change-whole-line }
-
-.evil-registers::vi-yank(){ .evil-registers::yank .vi-yank }
-
-.evil-registers::vi-yank-whole-line(){ .evil-registers::yank .vi-yank-whole-line }
-
-.evil-registers::vi-yank-eol(){ .evil-registers::yank .vi-yank-eol }
-
-.evil-registers::vi-put-after(){ .evil-registers::paste .vi-put-after }
-
-.evil-registers::vi-put-before(){ .evil-registers::paste .vi-put-before }
-# }}}
 # {{{ shadow vi-set-buffer
 .evil-registers::vi-set-buffer(){
 	read -k 1
@@ -66,14 +41,18 @@ autoload -Uz .evil-registers::{paste,yank} evil-registers_plugin_unload
 }
 # }}}
 # {{{ register new widgets
-for w in vi-delete vi-delete-char vi-kill-line vi-kill-eol \
-	vi-change vi-change-eol vi-change-whole-line \
-	vi-yank vi-yank-whole-line vi-yank-eol \
-	vi-put-after vi-put-before vi-set-buffer
-do
-	# TODO: best practice?
-	# overwrite old widgets
-	zle -N "$w" ".evil-registers::${w}"
+local w
+# TODO: best practice?
+# overwrite old widgets
+for w (vi-delete vi-delete-char vi-kill-line vi-kill-eol
+	vi-change vi-change-eol vi-change-whole-line
+	vi-yank vi-yank-whole-line vi-yank-eol
+); do
+	zle -N "$w" ".evil-registers::yank"
 done
+for w (vi-put-after vi-put-before); do
+	zle -N "$w" ".evil-registers::paste"
+done
+zle -N vi-set-buffer .evil-registers::vi-set-buffer
 # }}}
 # vim:foldmethod=marker

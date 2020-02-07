@@ -8,7 +8,7 @@ if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
 	zle .vi-set-buffer x
 	local x
 	x="${registers[x]}"
-	zle "$1"
+	zle ".$WIDGET"
 	eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
 	registers[x]="$x"
 	unset _evil_register
@@ -17,7 +17,7 @@ fi
 
 case $_evil_register in
 
-''|[0-9_]) zle "$1" ;;
+''|[0-9_]) zle ".$WIDGET" ;;
 [a-zA-Z]) # sync
 	if ! typeset +f .evil-registers::remote-set >/dev/null; then
 		case $ZSH_EVIL_SYNC_EDITOR in
@@ -41,7 +41,7 @@ case $_evil_register in
 			;;
 		*)
 			# no match found, do default zle and exit
-			zle "$1"
+			zle ".$WIDGET"
 			unset _evil_register
 			return
 			;;
@@ -53,14 +53,14 @@ case $_evil_register in
 	if [[ $_evil_register = [A-Z] ]]; then
 		zle .vi-set-buffer "${_evil_register:l}"
 		old=$registers[${_evil_register:l}]
-		zle "$1"
-	else zle "$1"; fi
+		zle ".$WIDGET"
+	else zle ".$WIDGET"; fi
 	# Use sched to execute without job control messages
 	# sched splits the parameters
 	sched +0 .evil-registers::remote-set "$_evil_register" "${(q)registers[${_evil_register:l}]}"
 	registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
 ;;
-*) zle "$1" ;;
+*) zle ".$WIDGET" ;;
 
 esac
 
