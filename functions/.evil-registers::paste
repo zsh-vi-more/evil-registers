@@ -40,6 +40,6 @@ elif [[ $_evil_register = [a-zA-Z] ]]; then
 	fi
 	(( $#reg )) && registers[$_evil_register]="$reg"
 fi
-zle "$1"
+zle ".$WIDGET"
 CUTBUFFER="$oldcutbuffer"
 unset _evil_register

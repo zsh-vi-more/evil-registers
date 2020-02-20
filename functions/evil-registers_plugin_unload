@@ -8,4 +8,4 @@ do
 	zle -A ".$w" "$w"
 done
 # Unload functions
-unhash -f -m '.evil-registers*'
+unhash -f -m '.evil-registers*' "$0"
