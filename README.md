@@ -56,6 +56,29 @@ See a demo [here](https://asciinema.org/a/q0N73xBvkYDBhBjR8DmD5F78w)!
 
 ## Extensions:
 
+### Last Insert Register `.`:
+
+To enable the last insert register on `".`,
+do one of the following:
+
+- Create or edit the function `zle-keymap-select`
+to add the function which tracks the register
+
+```zsh
+function zle-keymap-select(){ 
+	.evil-registers::track-insert
+	...
+}
+```
+
+- Bind the function directly:
+
+```zsh
+zle -N zle-keymap-select .evil-registers::track-insert
+```
+
+### User Extensions:
+
 If you have a clipboard (or any other function which you want to act as one),
 you can register it by adding it to the associative arrays:
 
