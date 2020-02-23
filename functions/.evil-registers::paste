@@ -31,6 +31,9 @@ elif [[ $_evil_register = ('%'|'#') ]]; then
 elif [[ $_evil_register = '/' ]]; then
 	CUTBUFFER="$LASTSEARCH"
 
+elif [[ $_evil_register = '.' ]]; then
+	CUTBUFFER="$__last_insert"
+
 elif [[ $_evil_register = [a-zA-Z] ]]; then
 	local reg
 	if (( ${#_evil_sync_remote} )); then

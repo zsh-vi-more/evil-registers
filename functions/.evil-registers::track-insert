@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+case $KEYMAP in
+	vicmd*) __last_insert="${LBUFFER[__old_CURSOR+1,-1]:-$__last_insert}" ;;
+	*) __old_CURSOR=$CURSOR ;;
+esac
