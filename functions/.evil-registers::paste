@@ -31,7 +31,7 @@ elif [[ $_evil_register = ('%'|'#') ]]; then
 elif [[ $_evil_register = '/' ]]; then
 	CUTBUFFER="$LASTSEARCH"
 
-elif [[ $_evil_register = '.' ]]; then
+elif [[ $_evil_register = '.' && -v __last_insert ]]; then
 	CUTBUFFER="$__last_insert"
 
 elif [[ $_evil_register = [a-zA-Z] ]]; then
