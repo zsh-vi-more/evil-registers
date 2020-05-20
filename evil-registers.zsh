@@ -34,8 +34,9 @@ autoload -Uz .evil-registers::{track-insert,paste,yank} evil-registers_plugin_un
 # }}}
 # {{{ shadow vi-set-buffer
 .evil-registers::vi-set-buffer(){
+	local REPLY
 	read -k 1
-	_evil_register="$REPLY"
+	typeset -g _evil_register="$REPLY"
 	zle .vi-set-buffer "$REPLY"
 }
 # }}}
