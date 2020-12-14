@@ -39,19 +39,21 @@ autoload -Uz .evil-registers::{track-insert,paste,yank} evil-registers_plugin_un
 	zle .vi-set-buffer "$_evil_register"
 }
 # }}}
-# {{{ register new widgets
-local w
-# TODO: best practice?
-# overwrite old widgets
-for w (vi-delete vi-delete-char vi-kill-line vi-kill-eol
-	vi-change vi-change-eol vi-change-whole-line
-	vi-yank vi-yank-whole-line vi-yank-eol
-); do
-	zle -N "$w" ".evil-registers::yank"
-done
-for w (vi-put-after vi-put-before); do
-	zle -N "$w" ".evil-registers::paste"
-done
-zle -N vi-set-buffer .evil-registers::vi-set-buffer
-# }}}
+(){ # {{{ register new widgets
+	local w
+	# TODO: best practice?
+	# overwrite old widgets
+	for w (
+		vi-delete vi-delete-char vi-kill-line vi-kill-eol
+		vi-change vi-change-eol vi-change-whole-line
+		vi-yank vi-yank-whole-line vi-yank-eol
+	); do
+		zle -N "$w" ".evil-registers::yank"
+	done
+	for w (vi-put-after vi-put-before); do
+		zle -N "$w" ".evil-registers::paste"
+	done
+	zle -N vi-set-buffer .evil-registers::vi-set-buffer
+} # }}}
+
 # vim:foldmethod=marker
