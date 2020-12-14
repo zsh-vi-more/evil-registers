@@ -46,9 +46,8 @@ Synchronization of the alphabetic registers is supported with these editors:
 - Neovim (requires `nvr`)
 - Vim (requires +clientserver support)
 
-Also, the `%` and `#` read-only registers prints
-the **full** path of the currently opened
-and alternate files in the editor.
+Additionally, the `%` and `#` read-only registers prints
+the **full** path of the current and alternate files in the editor.
 
 ## Usage:
 
