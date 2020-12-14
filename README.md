@@ -56,6 +56,24 @@ See a demo [here](https://asciinema.org/a/q0N73xBvkYDBhBjR8DmD5F78w)!
 
 ## Extensions:
 
+### Unnamed Register
+
+To override the unnamed register,
+use `zstyle :zle:evil-registers:'' [yank|put]`.
+
+Example: To get the same result as Vim's `set unnamedplus`
+
+```zsh
+(){
+	local op
+	local -a handler
+	for op in yank put; do
+		zstyle -g handler :zle:evil-registers:'+' $op
+		zstyle :zle:evil-registers:'' $op $handler
+	done
+}
+```
+
 ### Last Insert Register `.`:
 
 To enable the last insert register on `".`,
