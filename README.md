@@ -56,24 +56,6 @@ See a demo [here](https://asciinema.org/a/q0N73xBvkYDBhBjR8DmD5F78w)!
 
 ## Extensions:
 
-### Unnamed Register
-
-To override the unnamed register,
-use `zstyle :zle:evil-registers:'' [yank|put]`.
-
-Example: To get the same result as Vim's `set unnamedplus`
-
-```zsh
-(){
-	local op
-	local -a handler
-	for op in yank put; do
-		zstyle -g handler :zle:evil-registers:'+' $op
-		zstyle :zle:evil-registers:'' $op $handler
-	done
-}
-```
-
 ### Last Insert Register `.`:
 
 To enable the last insert register on `".`,
@@ -114,6 +96,25 @@ As an example, a simple one-directional append-to-text-file board can be impleme
 zstyle :zle:evil-registers:/ yank eval ">> $HOME/.scraps"
 ```
 Now you can append to `~/.scraps` with `"/y<vi-motion>`.
+
+### Unnamed Register
+
+To override the unnamed register,
+use `zstyle :zle:evil-registers:'' [yank|put]`.
+
+Example: To get the same result as Vim's `set unnamedplus`,
+add this after you source this plugin:
+
+```zsh
+(){
+	local op
+	local -a handler
+	for op in yank put; do
+		zstyle -g handler :zle:evil-registers:'+' $op
+		zstyle :zle:evil-registers:'' $op $handler
+	done
+}
+```
 
 ## Installation
 
