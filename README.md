@@ -11,8 +11,8 @@ _but_ there is a program which can set the clipboard from `stdin`,
 and a program which can print the contents of the clipboard on `stdout`,
 you can set the appropriate handlers like so:
 ```zsh
-ZSH_EVIL_COPY_HANDLERS[+]="clipboard-program --read-from-stdin"
-ZSH_EVIL_PASTE_HANDLERS[+]="clipboard-program --print-to-stdout"
+zstyle :zle:evil-registers:'+' yank clipboard-program --read-from-stdin
+zstyle :zle:evil-registers:'+' put  clipboard-program --print-to-stdout
 ```
 
 Then send us a pull request or report an issue!
@@ -22,7 +22,7 @@ We'd love to support more clipboards.
 
 - Yank a word to the system clipboard with `"+yaw`
 - Paste from the system primary selection (if supported) with `"*p`
-- If `ZSH_EVIL_SYNC_EDITOR` is set to a supported editor:
+- If `zstyle :zle:evil-registers:sync editor $your_editor` is set with a supported editor:
   - Delete the current line to your editor's register `a`: `"add`
   - Append the text [within quotes](https://github.com/zsh-vi-more/vi-motions) to your editor's register `q`: `"Qyi"`
   - Put the text from your editor's register `r` before your cursor: `"rP`
@@ -80,20 +80,20 @@ zle -N zle-keymap-select .evil-registers::track-insert
 ### User Extensions:
 
 If you have a clipboard (or any other function which you want to act as one),
-you can register it by adding it to the associative arrays:
+you can register it by adding the appropriate `zstyle`:
 
 ```zsh
-ZSH_EVIL_COPY_HANDLERS[$key]="your-command"
-ZSH_EVIL_PASTE_HANDLERS[$key]="your-command"
+zstyle :zle:evil-registers:$key yank your-command --with --args
+zstyle :zle:evil-registers:$key put  your-command --with --args
 ```
 
-`your-command` will be `eval`d.
+`your-command --with-args` will expect 
 If you define a function on a normal-use register (examples: `a`, `T`, `3`),
 then it will *override* its normal functionality, including the synchronization offered by this plugin.
 As an example, a simple one-directional append-to-text-file board can be implemented:
 
 ```zsh
-ZSH_EVIL_COPY_HANDLERS[/]=">> $HOME/.scraps"
+zstyle :zle:evil-registers:/ yank sh -c ">> $HOME/.scraps"
 ```
 Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 

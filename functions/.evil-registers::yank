@@ -3,24 +3,30 @@ emulate -L zsh
 setopt extendedglob
 zmodload zsh/sched
 
+# Get preferences from zstyle
+local -a handler
+local editor
+zstyle -g handler :zle:evil-registers:handlers:$_evil_register yank
+zstyle -g editor :zle:evil-registers:sync editor
+
 # Let handlers override normal [[:alnum:]_] registers
-if (( ${+ZSH_EVIL_COPY_HANDLERS[$_evil_register]} )); then
+if (( $#handler )); then
 	zle .vi-set-buffer x
 	local x
-	x="${registers[x]}"
-	zle ".$WIDGET"
-	eval ${ZSH_EVIL_COPY_HANDLERS[$_evil_register]} <<< "${registers[x]}"
-	registers[x]="$x"
+	x=$registers[x]
+	zle .$WIDGET
+	$handler <<< $registers[x]
+	registers[x]=$x
 	unset _evil_register
 	return
 fi
 
 case $_evil_register in
 
-''|[0-9_]) zle ".$WIDGET" ;;
+''|[0-9_]) zle .$WIDGET ;;
 [a-zA-Z]) # sync
 	if ! typeset +f .evil-registers::remote-set >/dev/null; then
-		case $ZSH_EVIL_SYNC_EDITOR in
+		case $editor in
 		nvim*|neovim*|nvr)
 			(( $+commands[nvr] )) &&
 				.evil-registers::remote-set(){
@@ -35,7 +41,7 @@ case $_evil_register in
 				.evil-registers::remote-set(){
 					local MATCH
 					local -i MBEGIN MEND
-					timeout -k 15 10 vim --servername "${VIMSERVER:="$ZSH_EVIL_SYNC_EDITOR"}" --remote-expr \
+					timeout -k 15 10 vim --servername "${VIMSERVER:=$editor}" --remote-expr \
 					"setreg('$1', \"${2//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 				}
 			;;

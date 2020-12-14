@@ -1,28 +1,35 @@
 #!/usr/bin/env zsh
 emulate -L zsh
 
-# _evil_sync_remote: currently vim/nvr ... --remote-expr
-(( $+_evil_sync_remote )) || case $ZSH_EVIL_SYNC_EDITOR in
-	(|g)vim*)
-		[[ $(vim --version) = *+clientserver* ]] &&
-			_evil_sync_remote=(vim --remote-expr)
-		;;
-	nvim*|neovim*|nvr) _evil_sync_remote=(nvr --nostart -s --remote-expr) ;;
+# Get preferences from zstyle
+local -a handler remote
+local editor
+zstyle -g handler :zle:evil-registers:handlers:$_evil_register paste
+zstyle -g editor :zle:evil-registers:sync editor
+zstyle -g remote :zle:evil-registers:sync remote
+
+(( $#remote )) || case $editor in
+	(|g)vim*) if [[ $(vim --version) = *+clientserver* ]]; then
+		remote=(vim --remote-expr)
+		zstyle :zle:evil-registers:sync remote $remote
+	fi ;;
+	nvim*|neovim*|nvr)
+		remote=(nvr --nostart -s --remote-expr)
+		zstyle :zle:evil-registers:sync remote $remote
 esac
 
 local oldcutbuffer="$CUTBUFFER"
 
 # handle user registers
-if (( ${+ZSH_EVIL_PASTE_HANDLERS[$_evil_register]} )); then
-
-	CUTBUFFER="$(eval ${ZSH_EVIL_PASTE_HANDLERS[$_evil_register]})"
+if (( $#handler )); then
+	CUTBUFFER="$($handler)"
 	zle .vi-set-buffer ''
 
 elif [[ $_evil_register = ('%'|'#') ]]; then
 	# full path of current/alternate buffer
 	local reg
-	if (( ${#_evil_sync_remote} )); then
-		CUTBUFFER="$($_evil_sync_remote "expand('$_evil_register:p')")"
+	if (( $#remote )); then
+		CUTBUFFER="$($remote "expand('$_evil_register:p')")"
 	else # TODO: more editors
 		CUTBUFFER="$PWD"
 	fi
@@ -36,8 +43,8 @@ elif [[ $_evil_register = '.' && -v __last_insert ]]; then
 
 elif [[ $_evil_register = [a-zA-Z] ]]; then
 	local reg
-	if (( ${#_evil_sync_remote} )); then
-		reg="$($_evil_sync_remote "getreg(\"$_evil_register\")")"
+	if (( ${#remote} )); then
+		reg="$($remote "getreg(\"$_evil_register\")")"
 	else
 		# TODO: more editors
 	fi

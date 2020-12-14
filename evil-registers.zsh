@@ -1,28 +1,26 @@
 # {{{ set system clipboard
 zmodload zsh/parameter
-declare -gA ZSH_EVIL_PASTE_HANDLERS
-declare -gA ZSH_EVIL_COPY_HANDLERS
-# "(e)*" to remove special meaning of "*"
+
 if (( $+commands[termux-clipboard-get] )); then
-	ZSH_EVIL_PASTE_HANDLERS[(e)*]="${ZSH_EVIL_PASTE_HANDLERS[(e)*]:-termux-clipboard-get}"
-	ZSH_EVIL_PASTE_HANDLERS[+]="${ZSH_EVIL_PASTE_HANDLERS[+]:-termux-clipboard-get}"
-	ZSH_EVIL_COPY_HANDLERS[(e)*]="${ZSH_EVIL_COPY_HANDLERS[(e)*]:-termux-clipboard-set}"
-	ZSH_EVIL_COPY_HANDLERS[+]="${ZSH_EVIL_COPY_HANDLERS[+]:-termux-clipboard-set}"
+	zstyle :zle:evil-registers:handlers:'*' paste termux-clipboard-get
+	zstyle :zle:evil-registers:handlers:'+' paste termux-clipboard-get
+	zstyle :zle:evil-registers:handlers:'*' yank  termux-clipboard-set
+	zstyle :zle:evil-registers:handlers:'+' yank  termux-clipboard-set
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	ZSH_EVIL_PASTE_HANDLERS[(e)*]="${ZSH_EVIL_PASTE_HANDLERS[(e)*]:-wl-paste -p -n}"
-	ZSH_EVIL_PASTE_HANDLERS[+]="${ZSH_EVIL_PASTE_HANDLERS[+]:-wl-paste -n}"
-	ZSH_EVIL_COPY_HANDLERS[(e)*]="${ZSH_EVIL_COPY_HANDLERS[(e)*]:-wl-copy -p}"
-	ZSH_EVIL_COPY_HANDLERS[+]="${ZSH_EVIL_COPY_HANDLERS[+]:-wl-copy}"
+	zstyle :zle:evil-registers:handlers:'*' paste wl-paste -p -n
+	zstyle :zle:evil-registers:handlers:'+' paste wl-paste -n
+	zstyle :zle:evil-registers:handlers:'*' yank  wl-copy -p
+	zstyle :zle:evil-registers:handlers:'+' yank  wl-copy
 elif (( $+DISPLAY & $+commands[xclip] )); then
-	ZSH_EVIL_PASTE_HANDLERS[(e)*]="${ZSH_EVIL_PASTE_HANDLERS[(e)*]:-xclip -out}"
-	ZSH_EVIL_PASTE_HANDLERS[+]="${ZSH_EVIL_PASTE_HANDLERS[+]:-xclip -selection clipboard -out}"
-	ZSH_EVIL_COPY_HANDLERS[(e)*]="${ZSH_EVIL_COPY_HANDLERS[(e)*]:-xclip}"
-	ZSH_EVIL_COPY_HANDLERS[+]="${ZSH_EVIL_COPY_HANDLERS[+]:-xclip -selection clipboard}"
+	zstyle :zle:evil-registers:handlers:'*' paste xclip -out
+	zstyle :zle:evil-registers:handlers:'+' paste xclip -selection clipboard -out
+	zstyle :zle:evil-registers:handlers:'*' yank  xclip
+	zstyle :zle:evil-registers:handlers:'+' yank  xclip -selection clipboard
 elif (( $+DISPLAY & $+commands[xsel] )); then
-	ZSH_EVIL_PASTE_HANDLERS[(e)*]="${ZSH_EVIL_PASTE_HANDLERS[(e)*]:-xsel -o}"
-	ZSH_EVIL_PASTE_HANDLERS[+]="${ZSH_EVIL_PASTE_HANDLERS[+]:-xsel -b -o}"
-	ZSH_EVIL_COPY_HANDLERS[(e)*]="${ZSH_EVIL_COPY_HANDLERS[(e)*]:-xsel -i}"
-	ZSH_EVIL_COPY_HANDLERS[+]="${ZSH_EVIL_COPY_HANDLERS[+]:-xsel -b -i}"
+	zstyle :zle:evil-registers:handlers:'*' paste xsel -o
+	zstyle :zle:evil-registers:handlers:'+' paste xsel -b -o
+	zstyle :zle:evil-registers:handlers:'*' yank  xsel -i
+	zstyle :zle:evil-registers:handlers:'+' yank  xsel -b -i
 fi
 # }}}
 # {{{ Handle fpath/$0
