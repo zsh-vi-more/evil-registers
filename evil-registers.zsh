@@ -28,7 +28,7 @@ fi
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
-autoload -Uz .evil-registers::{track-insert,paste,yank} evil-registers_plugin_unload
+autoload -Uz .evil-registers::{track-insert,paste,yank}
 # }}}
 # {{{ shadow vi-set-buffer
 .evil-registers::vi-set-buffer(){
