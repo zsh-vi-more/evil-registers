@@ -111,7 +111,7 @@ then it will *override* its normal functionality, including the synchronization 
 As an example, a simple one-directional append-to-text-file board can be implemented:
 
 ```zsh
-zstyle :zle:evil-registers:/ yank sh -c ">> $HOME/.scraps"
+zstyle :zle:evil-registers:/ yank eval ">> $HOME/.scraps"
 ```
 Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 
