@@ -99,7 +99,7 @@ Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 
 ### Unnamed Register
 
-To override the unnamed register,
+To set a handler for the unnamed register,
 use `zstyle :zle:evil-registers:'' [yank|put]`.
 
 Example: To get the same result as Vim's `set unnamedplus`,
