@@ -4,7 +4,7 @@ emulate -L zsh
 # Get preferences from zstyle
 local -a handler remote
 local editor
-zstyle -g handler :zle:evil-registers:handlers:$_evil_register paste
+zstyle -g handler :zle:evil-registers:handlers:$_evil_register put
 zstyle -g editor :zle:evil-registers:sync editor
 zstyle -g remote :zle:evil-registers:sync remote
 

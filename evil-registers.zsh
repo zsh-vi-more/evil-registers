@@ -2,25 +2,25 @@
 zmodload zsh/parameter
 
 if (( $+commands[termux-clipboard-get] )); then
-	zstyle :zle:evil-registers:handlers:'*' paste termux-clipboard-get
-	zstyle :zle:evil-registers:handlers:'+' paste termux-clipboard-get
-	zstyle :zle:evil-registers:handlers:'*' yank  termux-clipboard-set
-	zstyle :zle:evil-registers:handlers:'+' yank  termux-clipboard-set
+	zstyle :zle:evil-registers:handlers:'*' put  termux-clipboard-get
+	zstyle :zle:evil-registers:handlers:'+' put  termux-clipboard-get
+	zstyle :zle:evil-registers:handlers:'*' yank termux-clipboard-set
+	zstyle :zle:evil-registers:handlers:'+' yank termux-clipboard-set
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	zstyle :zle:evil-registers:handlers:'*' paste wl-paste -p -n
-	zstyle :zle:evil-registers:handlers:'+' paste wl-paste -n
-	zstyle :zle:evil-registers:handlers:'*' yank  wl-copy -p
-	zstyle :zle:evil-registers:handlers:'+' yank  wl-copy
+	zstyle :zle:evil-registers:handlers:'*' put  wl-put -p -n
+	zstyle :zle:evil-registers:handlers:'+' put  wl-put -n
+	zstyle :zle:evil-registers:handlers:'*' yank wl-copy -p
+	zstyle :zle:evil-registers:handlers:'+' yank wl-copy
 elif (( $+DISPLAY & $+commands[xclip] )); then
-	zstyle :zle:evil-registers:handlers:'*' paste xclip -out
-	zstyle :zle:evil-registers:handlers:'+' paste xclip -selection clipboard -out
-	zstyle :zle:evil-registers:handlers:'*' yank  xclip
-	zstyle :zle:evil-registers:handlers:'+' yank  xclip -selection clipboard
+	zstyle :zle:evil-registers:handlers:'*' put  xclip -out
+	zstyle :zle:evil-registers:handlers:'+' put  xclip -selection clipboard -out
+	zstyle :zle:evil-registers:handlers:'*' yank xclip
+	zstyle :zle:evil-registers:handlers:'+' yank xclip -selection clipboard
 elif (( $+DISPLAY & $+commands[xsel] )); then
-	zstyle :zle:evil-registers:handlers:'*' paste xsel -o
-	zstyle :zle:evil-registers:handlers:'+' paste xsel -b -o
-	zstyle :zle:evil-registers:handlers:'*' yank  xsel -i
-	zstyle :zle:evil-registers:handlers:'+' yank  xsel -b -i
+	zstyle :zle:evil-registers:handlers:'*' put  xsel -o
+	zstyle :zle:evil-registers:handlers:'+' put  xsel -b -o
+	zstyle :zle:evil-registers:handlers:'*' yank xsel -i
+	zstyle :zle:evil-registers:handlers:'+' yank xsel -b -i
 fi
 # }}}
 # {{{ Handle fpath/$0
@@ -28,7 +28,7 @@ fi
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
-autoload -Uz .evil-registers::{track-insert,paste,yank}
+autoload -Uz .evil-registers::{track-insert,put,yank}
 # }}}
 # {{{ shadow vi-set-buffer
 .evil-registers::vi-set-buffer(){
@@ -49,7 +49,7 @@ autoload -Uz .evil-registers::{track-insert,paste,yank}
 		zle -N "$w" ".evil-registers::yank"
 	done
 	for w (vi-put-after vi-put-before); do
-		zle -N "$w" ".evil-registers::paste"
+		zle -N "$w" ".evil-registers::put"
 	done
 	zle -N vi-set-buffer .evil-registers::vi-set-buffer
 } # }}}
