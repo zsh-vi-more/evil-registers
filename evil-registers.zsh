@@ -22,8 +22,8 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 fi
 # other defaults:
 # readonly registers "/ and ".
-zstyle :zle:evil-registers:/ putvar LASTSEARCH
-zstyle :zle:evil-registers:. putvar __last_insert
+zstyle :zle:evil-registers:/ putv LASTSEARCH
+zstyle :zle:evil-registers:. putv __last_insert
 # }}}
 # {{{ Handle fpath/$0
 # ref: zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html#zero-handling
