@@ -3,8 +3,7 @@ emulate -L zsh
 setopt extendedglob
 zmodload zsh/sched
 
-# Get preferences from zstyle
-local -a handler ahandler
+local -a {,a,v}handler
 
 # On first run, setup editor
 if (($+functions[.evil-registers::setup-editor])); then
@@ -12,10 +11,12 @@ if (($+functions[.evil-registers::setup-editor])); then
 	unfunction .evil-registers::setup-editor
 fi
 
+# Get preferences from zstyle
 zstyle -a :zle:evil-registers:${(q)_evil_register} yank   handler
 zstyle -a :zle:evil-registers:${(q)_evil_register} yanka ahandler
+zstyle -a :zle:evil-registers:${(q)_evil_register} yankv vhandler
 
-# Let direct handlers override register handlers
+# handle user registers without argument
 if (( $#handler )); then
 	zle .vi-set-buffer x
 	local x
@@ -23,6 +24,8 @@ if (( $#handler )); then
 	zle .$WIDGET
 	$handler <<< $registers[x]
 	registers[x]=$x
+
+# handle user registers with argument
 elif (($#ahandler)); then
 
 	# append or set remote
@@ -38,6 +41,12 @@ elif (($#ahandler)); then
 	# sched splits the parameters
 	sched +0 $ahandler "$_evil_register" "${(q)registers[${_evil_register:l}]}"
 	registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
+
+# handle user registers from variable
+elif (($#vhandler)) && [[ -v $vhandler ]]; then
+	newcutbuffer="${(P)vhandler}"
+
+# fallback to default behavior
 else
 	zle .$WIDGET
 fi

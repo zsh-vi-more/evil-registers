@@ -1,14 +1,15 @@
 #!/usr/bin/env zsh
 emulate -L zsh
 
-# Get preferences from zstyle
-local -a handler ahandler
+local -a {,a,v}handler
+
 # On first run, setup editor
 if (($+functions[.evil-registers::setup-editor])); then
 	.evil-registers::setup-editor
 	unfunction .evil-registers::setup-editor
 fi
 
+# Get preferences from zstyle
 zstyle -a :zle:evil-registers:${(q)_evil_register} put  handler
 zstyle -a :zle:evil-registers:${(q)_evil_register} puta ahandler
 zstyle -a :zle:evil-registers:${(q)_evil_register} putv vhandler
