@@ -5,8 +5,8 @@ if (( $+commands[termux-clipboard-get] )); then
 	zstyle :zle:evil-registers:'[*+]' put  termux-clipboard-get
 	zstyle :zle:evil-registers:'[*+]' yank termux-clipboard-set
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	zstyle :zle:evil-registers:'\*' put  wl-put -p -n
-	zstyle :zle:evil-registers:'+'  put  wl-put -n
+	zstyle :zle:evil-registers:'\*' put  wl-paste -p -n
+	zstyle :zle:evil-registers:'+'  put  wl-paste -n
 	zstyle :zle:evil-registers:'\*' yank wl-copy -p
 	zstyle :zle:evil-registers:'+'  yank wl-copy
 elif (( $+DISPLAY & $+commands[xclip] )); then
