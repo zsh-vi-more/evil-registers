@@ -1,0 +1,60 @@
+#!/usr/bin/env zsh
+emulate -L zsh
+
+# allow various formats for editor
+local -A editor_lookup=(
+	'[nN][vV]*' nvim
+	'(|[gG])vim' vim
+)
+local -a all_styles editor handler
+local context fname lookup
+
+zstyle -g all_styles
+
+for context (${(M)all_styles:#:zle:evil-registers:*}){
+	zstyle -g editor $context editor
+	(($#editor)) || continue
+
+	# normalize the editor name
+	editor=(${editor_lookup[(k)$editor]:-$editor})
+
+	# check if the functions are already defined
+	(($+functions[.evil-registers::${editor}-yank])) || case $editor in
+		nvim)
+			.evil-registers::nvim-yank(){
+				local MATCH MBEGIN MEND
+				timeout -k 15 10 nvr -s --nostart --remote-expr \
+					"setreg('$1', \"${2//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
+			}
+			.evil-registers::nvim-put(){
+				if [[ $1 = [%#] ]]; then
+					nvr -s --nostart --remote-expr "expand('$1:p')"
+				else
+					nvr -s --nostart --remote-expr "getreg('$_evil_register')"
+				fi
+			}
+		;;
+		vim)
+			.evil-registers::vim-yank(){
+				local MATCH MBEGIN MEND
+				timeout -k 15 10 vim --remote-expr \
+					"setreg('$1', \"${2//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
+			}
+			.evil-registers::vim-put(){
+				if [[ $1 = [%#] ]]; then
+					vim --remote-expr "expand('$1:p')"
+				else
+					vim --remote-expr "getreg('$_evil_register')"
+				fi
+			}
+		;;
+		*)
+			zle -M "evil-registers: warning: $editor not supported, removing style"
+			zstyle -d $context editor
+			continue
+	esac
+
+	# Set yank and put operations for the current context
+	zstyle $context yankreg .evil-registers::${editor}-yank
+	zstyle $context  putreg .evil-registers::${editor}-put
+}

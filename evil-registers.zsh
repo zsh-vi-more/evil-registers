@@ -2,33 +2,35 @@
 zmodload zsh/parameter
 
 if (( $+commands[termux-clipboard-get] )); then
-	zstyle :zle:evil-registers:handlers:'*' put  termux-clipboard-get
-	zstyle :zle:evil-registers:handlers:'+' put  termux-clipboard-get
-	zstyle :zle:evil-registers:handlers:'*' yank termux-clipboard-set
-	zstyle :zle:evil-registers:handlers:'+' yank termux-clipboard-set
+	zstyle :zle:evil-registers:'[*+]' put  termux-clipboard-get
+	zstyle :zle:evil-registers:'[*+]' yank termux-clipboard-set
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	zstyle :zle:evil-registers:handlers:'*' put  wl-put -p -n
-	zstyle :zle:evil-registers:handlers:'+' put  wl-put -n
-	zstyle :zle:evil-registers:handlers:'*' yank wl-copy -p
-	zstyle :zle:evil-registers:handlers:'+' yank wl-copy
+	zstyle :zle:evil-registers:'\*' put  wl-put -p -n
+	zstyle :zle:evil-registers:'+'  put  wl-put -n
+	zstyle :zle:evil-registers:'\*' yank wl-copy -p
+	zstyle :zle:evil-registers:'+'  yank wl-copy
 elif (( $+DISPLAY & $+commands[xclip] )); then
-	zstyle :zle:evil-registers:handlers:'*' put  xclip -out
-	zstyle :zle:evil-registers:handlers:'+' put  xclip -selection clipboard -out
-	zstyle :zle:evil-registers:handlers:'*' yank xclip
-	zstyle :zle:evil-registers:handlers:'+' yank xclip -selection clipboard
+	zstyle :zle:evil-registers:'\*' put  xclip -out
+	zstyle :zle:evil-registers:'+'  put  xclip -selection clipboard -out
+	zstyle :zle:evil-registers:'\*' yank xclip
+	zstyle :zle:evil-registers:'+'  yank xclip -selection clipboard
 elif (( $+DISPLAY & $+commands[xsel] )); then
-	zstyle :zle:evil-registers:handlers:'*' put  xsel -o
-	zstyle :zle:evil-registers:handlers:'+' put  xsel -b -o
-	zstyle :zle:evil-registers:handlers:'*' yank xsel -i
-	zstyle :zle:evil-registers:handlers:'+' yank xsel -b -i
+	zstyle :zle:evil-registers:'\*' put  xsel -o
+	zstyle :zle:evil-registers:'+'  put  xsel -b -o
+	zstyle :zle:evil-registers:'\*' yank xsel -i
+	zstyle :zle:evil-registers:'+'  yank xsel -b -i
 fi
+# other defaults:
+# readonly registers "/ and ".
+zstyle :zle:evil-registers:/ putvar LASTSEARCH
+zstyle :zle:evil-registers:. putvar __last_insert
 # }}}
 # {{{ Handle fpath/$0
 # ref: zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html#zero-handling
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
-autoload -Uz .evil-registers::{track-insert,put,yank}
+autoload -Uz .evil-registers::{track-insert,put,yank,setup-editor}
 # }}}
 # {{{ shadow vi-set-buffer
 .evil-registers::vi-set-buffer(){

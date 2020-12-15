@@ -46,8 +46,15 @@ Synchronization of the alphabetic registers is supported with these editors:
 - Neovim (requires `nvr`)
 - Vim (requires +clientserver support)
 
-Additionally, the `%` and `#` read-only registers prints
-the **full** path of the current and alternate files in the editor.
+Example:
+
+```zsh
+zstyle :zle:evil-registers:'[A-Za-z%#]' editor nvim
+```
+
+The function which pulls the registers from Neovim and Vim
+have special behavior for `"%` and `"#`,
+as they substitute the full path instead.
 
 ## Usage:
 
@@ -82,11 +89,23 @@ If you have a clipboard (or any other function which you want to act as one),
 you can register it by adding the appropriate `zstyle`:
 
 ```zsh
-zstyle :zle:evil-registers:$key yank your-command --with --args
-zstyle :zle:evil-registers:$key put  your-command --with --args
+# Here, $p is either a keystroke or a pattern which matches a keystroke
+zstyle :zle:evil-registers:$p yank your-command --with --args
+zstyle :zle:evil-registers:$p put  your-command --with --args
+
+
+# The following style will add the register keystroke and the line as arguments to your-command
+# Example: With p='[abc]', "byy will run `your-command --which-expects-register b "$line"`
+zstyle :zle:evil-registers:$p yanka your-command --which-expects-register
+
+# The following style will add the register keystroke as an argument to your-command
+zstyle :zle:evil-registers:$p puta  your-command --which-expects-register
+
+# The following style will substitute the current value of the variable passed:
+zstyle :zle:evil-registers:$p putv VAR_NAME
+zstyle :zle:evil-registers:$p putv 'array[key]'
 ```
 
-`your-command --with-args` will expect 
 If you define a function on a normal-use register (examples: `a`, `T`, `3`),
 then it will *override* its normal functionality, including the synchronization offered by this plugin.
 As an example, a simple one-directional append-to-text-file board can be implemented:
@@ -99,7 +118,10 @@ Now you can append to `~/.scraps` with `"/y<vi-motion>`.
 ### Unnamed Register
 
 To set a handler for the unnamed register,
-use `zstyle :zle:evil-registers:'' [yank|put]`.
+use an empty pattern:
+```zsh
+zstyle :zle:evil-registers:'' $operation $handler
+```
 
 Example: To get the same result as Vim's `set unnamedplus`,
 add this after you source this plugin:
@@ -108,9 +130,11 @@ add this after you source this plugin:
 (){
 	local op
 	local -a handler
-	for op in yank put; do
-		zstyle -g handler :zle:evil-registers:'+' $op
-		zstyle :zle:evil-registers:'' $op $handler
+	for op in {yank,put}{,a,v}; do
+		# get the current behavior for '+'
+		zstyle -a :zle:evil-registers:'+' $op handler
+		# if there is a handler, assign it for the empty pattern
+		(($#handler)) && zstyle :zle:evil-registers:'' $op $handler
 	done
 }
 ```

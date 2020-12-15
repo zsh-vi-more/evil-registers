@@ -2,54 +2,44 @@
 emulate -L zsh
 
 # Get preferences from zstyle
-local -a handler remote
-local editor
-zstyle -g handler :zle:evil-registers:handlers:$_evil_register put
-zstyle -g editor :zle:evil-registers:sync editor
-zstyle -g remote :zle:evil-registers:sync remote
-
-(( $#remote )) || case $editor in
-	(|g)vim*) if [[ $(vim --version) = *+clientserver* ]]; then
-		remote=(vim --remote-expr)
-		zstyle :zle:evil-registers:sync remote $remote
-	fi ;;
-	nvim*|neovim*|nvr)
-		remote=(nvr --nostart -s --remote-expr)
-		zstyle :zle:evil-registers:sync remote $remote
-esac
-
-local oldcutbuffer="$CUTBUFFER"
-
-# handle user registers
-if (( $#handler )); then
-	CUTBUFFER="$($handler)"
-	zle .vi-set-buffer ''
-
-elif [[ $_evil_register = ('%'|'#') ]]; then
-	# full path of current/alternate buffer
-	local reg
-	if (( $#remote )); then
-		CUTBUFFER="$($remote "expand('$_evil_register:p')")"
-	else # TODO: more editors
-		CUTBUFFER="$PWD"
-	fi
-	zle .vi-set-buffer ''
-
-elif [[ $_evil_register = '/' ]]; then
-	CUTBUFFER="$LASTSEARCH"
-
-elif [[ $_evil_register = '.' && -v __last_insert ]]; then
-	CUTBUFFER="$__last_insert"
-
-elif [[ $_evil_register = [a-zA-Z] ]]; then
-	local reg
-	if (( ${#remote} )); then
-		reg="$($remote "getreg(\"$_evil_register\")")"
-	else
-		# TODO: more editors
-	fi
-	(( $#reg )) && registers[$_evil_register]="$reg"
+local -a handler ahandler
+# On first run, setup editor
+if (($+functions[.evil-registers::setup-editor])); then
+	.evil-registers::setup-editor
+	unfunction .evil-registers::setup-editor
 fi
-zle ".$WIDGET"
-CUTBUFFER="$oldcutbuffer"
+
+zstyle -a :zle:evil-registers:${(q)_evil_register} put  handler
+zstyle -a :zle:evil-registers:${(q)_evil_register} puta ahandler
+zstyle -a :zle:evil-registers:${(q)_evil_register} putv vhandler
+
+local newcutbuffer
+
+# handle user registers without argument
+if (( $#handler )) && newcutbuffer=$($handler); then
+
+# handle user registers with argument
+elif (($#ahandler)) && newcutbuffer=$($ahandler $_evil_register); then
+
+# handle user registers from variable
+elif (($#vhandler)) && [[ -v $vhandler ]]; then
+	newcutbuffer="${(P)vhandler}"
+
+# unset var to signal failure
+else
+	unset newcutbuffer
+fi
+
+# If _evil_register is a builtin buffer,
+# then set ZLE's internal registers array
+if [[ $_evil_register = [a-zA-Z] ]]; then
+	if (($#newcutbuffer)); then
+		registers[$_evil_register]=$newcutbuffer
+	fi
+# Not builtin, use default CUTBUFFER:
+elif [[ -v newcutbuffer ]]; then
+	zle .vi-set-buffer ''
+	CUTBUFFER=$newcutbuffer
+fi
+zle .$WIDGET
 unset _evil_register
