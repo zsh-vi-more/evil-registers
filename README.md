@@ -22,7 +22,7 @@ We'd love to support more clipboards.
 
 - Yank a word to the system clipboard with `"+yaw`
 - Paste from the system primary selection (if supported) with `"*p`
-- If `zstyle :zle:evil-registers:sync editor $your_editor` is set with a supported editor:
+- If `zstyle :zle:evil-registers:'[A-Za-z]' editor $your_editor` is set with a supported editor:
   - Delete the current line to your editor's register `a`: `"add`
   - Append the text [within quotes](https://github.com/zsh-vi-more/vi-motions) to your editor's register `q`: `"Qyi"`
   - Put the text from your editor's register `r` before your cursor: `"rP`
