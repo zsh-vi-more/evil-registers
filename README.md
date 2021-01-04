@@ -18,7 +18,7 @@ zstyle :zle:evil-registers:'+' put  clipboard-program --print-to-stdout
 Then send us a pull request or report an issue!
 We'd love to support more clipboards.
 
-## Usage Examples
+## Workflow Examples
 
 - Yank a word to the system clipboard with `"+yaw`
 - Paste from the system primary selection (if supported) with `"*p`
@@ -26,6 +26,8 @@ We'd love to support more clipboards.
   - Delete the current line to your editor's register `a`: `"add`
   - Append the text [within quotes](https://github.com/zsh-vi-more/vi-motions) to your editor's register `q`: `"Qyi"`
   - Put the text from your editor's register `r` before your cursor: `"rP`
+
+See a demo [here](https://asciinema.org/a/q0N73xBvkYDBhBjR8DmD5F78w)!
 
 ## Supported interfaces
 
@@ -56,12 +58,6 @@ The function which pulls the registers from Neovim and Vim
 have special behavior for `"%` and `"#`,
 as they substitute the full path instead.
 
-## Usage:
-
-See a demo [here](https://asciinema.org/a/q0N73xBvkYDBhBjR8DmD5F78w)!
-
-## Extensions:
-
 ### Last Insert Register `.`:
 
 To enable the last insert register on `".`,
@@ -83,7 +79,7 @@ function zle-keymap-select(){
 zle -N zle-keymap-select .evil-registers::track-insert
 ```
 
-### User Extensions:
+### Custom Registers:
 
 If you have a clipboard (or any other function which you want to act as one),
 you can register it by adding the appropriate `zstyle`:
