@@ -1,0 +1,46 @@
+#!/usr/bin/env zsh
+emulate -L zsh
+
+local -a {,a,v}handler
+
+# On first run, setup editor
+if (($+functions[.evil-registers::setup-editor])); then
+	.evil-registers::setup-editor
+	unfunction .evil-registers::setup-editor
+fi
+
+# Get preferences from zstyle
+zstyle -a :zle:evil-registers:${(q)_evil_register} put  handler
+zstyle -a :zle:evil-registers:${(q)_evil_register} puta ahandler
+zstyle -a :zle:evil-registers:${(q)_evil_register} putv vhandler
+
+local newcutbuffer
+
+# handle user registers without argument
+if (( $#handler )) && newcutbuffer=$($handler); then
+
+# handle user registers with argument
+elif (($#ahandler)) && newcutbuffer=$($ahandler $_evil_register); then
+
+# handle user registers from variable
+elif (($#vhandler)) && [[ -v $vhandler ]]; then
+	newcutbuffer="${(P)vhandler}"
+
+# unset var to signal failure
+else
+	unset newcutbuffer
+fi
+
+# If _evil_register is a builtin buffer,
+# then set ZLE's internal registers array
+if [[ $_evil_register = [a-zA-Z] ]]; then
+	if (($#newcutbuffer)); then
+		registers[$_evil_register]=$newcutbuffer
+	fi
+# Not builtin, use default CUTBUFFER:
+elif [[ -v newcutbuffer ]]; then
+	zle .vi-set-buffer ''
+	CUTBUFFER=$newcutbuffer
+fi
+zle .$WIDGET
+unset _evil_register

@@ -11,8 +11,8 @@ _but_ there is a program which can set the clipboard from `stdin`,
 and a program which can print the contents of the clipboard on `stdout`,
 you can set the appropriate handlers like so:
 ```zsh
-ZSH_EVIL_COPY_HANDLERS[+]="clipboard-program --read-from-stdin"
-ZSH_EVIL_PASTE_HANDLERS[+]="clipboard-program --print-to-stdout"
+zstyle :zle:evil-registers:'+' yank clipboard-program --read-from-stdin
+zstyle :zle:evil-registers:'+' put  clipboard-program --print-to-stdout
 ```
 
 Then send us a pull request or report an issue!
@@ -22,7 +22,7 @@ We'd love to support more clipboards.
 
 - Yank a word to the system clipboard with `"+yaw`
 - Paste from the system primary selection (if supported) with `"*p`
-- If `ZSH_EVIL_SYNC_EDITOR` is set to a supported editor:
+- If `zstyle :zle:evil-registers:sync editor $your_editor` is set with a supported editor:
   - Delete the current line to your editor's register `a`: `"add`
   - Append the text [within quotes](https://github.com/zsh-vi-more/vi-motions) to your editor's register `q`: `"Qyi"`
   - Put the text from your editor's register `r` before your cursor: `"rP`
@@ -46,9 +46,15 @@ Synchronization of the alphabetic registers is supported with these editors:
 - Neovim (requires `nvr`)
 - Vim (requires +clientserver support)
 
-Also, the `%` and `#` read-only registers prints
-the **full** path of the currently opened
-and alternate files in the editor.
+Example:
+
+```zsh
+zstyle :zle:evil-registers:'[A-Za-z%#]' editor nvim
+```
+
+The function which pulls the registers from Neovim and Vim
+have special behavior for `"%` and `"#`,
+as they substitute the full path instead.
 
 ## Usage:
 
@@ -80,22 +86,58 @@ zle -N zle-keymap-select .evil-registers::track-insert
 ### User Extensions:
 
 If you have a clipboard (or any other function which you want to act as one),
-you can register it by adding it to the associative arrays:
+you can register it by adding the appropriate `zstyle`:
 
 ```zsh
-ZSH_EVIL_COPY_HANDLERS[$key]="your-command"
-ZSH_EVIL_PASTE_HANDLERS[$key]="your-command"
+# Here, $p is either a keystroke or a pattern which matches a keystroke
+zstyle :zle:evil-registers:$p yank your-command --with --args
+zstyle :zle:evil-registers:$p put  your-command --with --args
+
+
+# The following style will add the register keystroke and the line as arguments to your-command
+# Example: With p='[abc]', "byy will run `your-command --which-expects-register b "$line"`
+zstyle :zle:evil-registers:$p yanka your-command --which-expects-register
+
+# The following style will add the register keystroke as an argument to your-command
+zstyle :zle:evil-registers:$p puta  your-command --which-expects-register
+
+# The following style will substitute the current value of the variable passed:
+zstyle :zle:evil-registers:$p putv VAR_NAME
+zstyle :zle:evil-registers:$p putv 'array[key]'
 ```
 
-`your-command` will be `eval`d.
 If you define a function on a normal-use register (examples: `a`, `T`, `3`),
 then it will *override* its normal functionality, including the synchronization offered by this plugin.
 As an example, a simple one-directional append-to-text-file board can be implemented:
 
 ```zsh
-ZSH_EVIL_COPY_HANDLERS[/]=">> $HOME/.scraps"
+zstyle :zle:evil-registers:/ yank eval ">> $HOME/.scraps"
 ```
 Now you can append to `~/.scraps` with `"/y<vi-motion>`.
+
+### Unnamed Register
+
+To set a handler for the unnamed register,
+use an empty pattern:
+```zsh
+zstyle :zle:evil-registers:'' $operation $handler
+```
+
+Example: To get the same result as Vim's `set unnamedplus`,
+add this after you source this plugin:
+
+```zsh
+(){
+	local op
+	local -a handler
+	for op in {yank,put}{,a,v}; do
+		# get the current behavior for '+'
+		zstyle -a :zle:evil-registers:'+' $op handler
+		# if there is a handler, assign it for the empty pattern
+		(($#handler)) && zstyle :zle:evil-registers:'' $op $handler
+	done
+}
+```
 
 ## Installation
 
