@@ -60,23 +60,17 @@ as they substitute the full path instead.
 
 ### Last Insert Register `.`:
 
-To enable the last insert register on `".`,
-do one of the following:
+The last insert register should work by default,
+as long as the function `zle-keymap-select` does not exist.
 
-- Create or edit the function `zle-keymap-select`
-to add the function which tracks the register
+If your config creates it, you should consider using
+`add-zle-hook-widget` instead:
 
 ```zsh
-function zle-keymap-select(){ 
-	.evil-registers::track-insert
+function my-zks(){
 	...
 }
-```
-
-- Bind the function directly:
-
-```zsh
-zle -N zle-keymap-select .evil-registers::track-insert
+add-zle-hook-widget zle-keymap-select my-zks
 ```
 
 ### Custom Registers:

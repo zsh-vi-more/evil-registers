@@ -30,7 +30,8 @@ zstyle :zle:evil-registers:. putv __last_insert
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
-autoload -Uz .evil-registers::{track-insert,put,yank,setup-editor}
+autoload -Uz .evil-registers::{track-insert,put,yank,setup-editor} add-zle-hook-widget
+add-zle-hook-widget zle-keymap-select .evil-registers::track-insert
 # }}}
 # {{{ shadow vi-set-buffer
 .evil-registers::vi-set-buffer(){
