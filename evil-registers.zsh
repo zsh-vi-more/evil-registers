@@ -21,7 +21,7 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	zstyle :zle:evil-registers:'+'  yank xsel -b -i
 elif (( $+commands[base64] )); then
 	.evil-registers::osc52-yank(){
-		printf "\e]52;$1;$(base64 <<< $3)\a"
+		printf ${TMUX+"\ePtmux;\e"}\e]"52;$1;$(base64 <<< $3)\a"${TMUX+'\e\'}
 	}
 	zstyle :zle:evil-registers:'\*' yanka .evil-registers::osc52-yank p
 	zstyle :zle:evil-registers:'+'  yanka .evil-registers::osc52-yank c
