@@ -21,10 +21,22 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	zstyle :zle:evil-registers:'+'  yank xsel -b -i
 elif (( $+commands[base64] )); then
 	.evil-registers::osc52-yank(){
-		printf ${TMUX+"\ePtmux;\e"}\e]"52;$1;$(base64 <<< $3)\a"${TMUX+'\e\'}
+		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64 <<< $3)"\\a${TMUX+'\e\'}
 	}
+	.evil-registers::osc52-put()(
+		local REPLY
+		(
+			STTY=-echo
+			printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'}
+			STTY=echo
+		) &
+		read -rs -d$'\a' REPLY
+		base64 -d <<< ${REPLY##*;}
+	)
 	zstyle :zle:evil-registers:'\*' yanka .evil-registers::osc52-yank p
 	zstyle :zle:evil-registers:'+'  yanka .evil-registers::osc52-yank c
+	zstyle :zle:evil-registers:'\*' puta  .evil-registers::osc52-put  p
+	zstyle :zle:evil-registers:'+'  puta  .evil-registers::osc52-put  c
 fi
 # other defaults:
 # readonly registers "/ and ".
