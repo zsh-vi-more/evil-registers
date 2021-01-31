@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 emulate -L zsh
 
-local -a {,a,v}handler
+local -a handler
 
 # On first run, setup editor
 if (($+functions[.evil-registers::setup-editor])); then
@@ -11,25 +11,34 @@ fi
 
 # Get preferences from zstyle
 zstyle -a :zle:evil-registers:${(q)_evil_register} put  handler
-zstyle -a :zle:evil-registers:${(q)_evil_register} puta ahandler
-zstyle -a :zle:evil-registers:${(q)_evil_register} putv vhandler
 
 local newcutbuffer
 
-# handle user registers without argument
-if (( $#handler )) && newcutbuffer=$($handler); then
+# Does handler take an argument?
+[[ ${handler[1]:l} = -*a* ]] && handler+=($_evil_register)
 
-# handle user registers with argument
-elif (($#ahandler)) && newcutbuffer=$($ahandler $_evil_register); then
-
-# handle user registers from variable
-elif (($#vhandler)) && [[ -v $vhandler ]]; then
-	newcutbuffer="${(P)vhandler}"
-
-# unset var to signal failure
-else
-	unset newcutbuffer
-fi
+# How does handler output?
+case ${handler[1]:l} in
+	-v)   # $handler is a parameter name
+		newcutbuffer=${(P)handler}
+	;;
+	-*p*) # parameter (provided)
+		${handler:1} newcutbuffer
+	;;
+	-*r*) # REPLY parameter
+		local REPLY
+		${handler:1}
+		newcutbuffer=$REPLY
+	;;
+	-*) # stdout
+		newcutbuffer=$(${handler:1})
+	;;
+	'') # nothing? Assume failure
+		unset newcutbuffer
+	;;
+	*)  # no flags provided, assume stdout with whole $handler
+		newcutbuffer=$($handler)
+esac
 
 # If _evil_register is a builtin buffer,
 # then set ZLE's internal registers array
