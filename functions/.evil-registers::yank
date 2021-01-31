@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 emulate -L zsh
 setopt extendedglob
-zmodload zsh/sched
 
 local -a handler
 
