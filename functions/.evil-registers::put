@@ -12,7 +12,7 @@ fi
 # Get preferences from zstyle
 zstyle -a :zle:evil-registers:${(q)_evil_register} put  handler
 
-local newcutbuffer
+local REPLY
 
 # Does handler take an argument?
 [[ ${handler[1]:l} = -*a* ]] && handler+=($_evil_register)
@@ -20,36 +20,31 @@ local newcutbuffer
 # How does handler output?
 case ${handler[1]:l} in
 	-v)   # $handler is a parameter name
-		newcutbuffer=${(P)handler}
-	;;
-	-*p*) # parameter (provided)
-		${handler:1} newcutbuffer
+		REPLY=${(P)handler}
 	;;
 	-*r*) # REPLY parameter
-		local REPLY
 		${handler:1}
-		newcutbuffer=$REPLY
 	;;
 	-*) # stdout
-		newcutbuffer=$(${handler:1})
+		REPLY=$(${handler:1})
 	;;
 	'') # nothing? Assume failure
-		unset newcutbuffer
+		unset REPLY
 	;;
 	*)  # no flags provided, assume stdout with whole $handler
-		newcutbuffer=$($handler)
+		REPLY=$($handler)
 esac
 
 # If _evil_register is a builtin buffer,
 # then set ZLE's internal registers array
 if [[ $_evil_register = [a-zA-Z] ]]; then
-	if (($#newcutbuffer)); then
-		registers[$_evil_register]=$newcutbuffer
+	if (($#REPLY)); then
+		registers[$_evil_register]=$REPLY
 	fi
 # Not builtin, use default CUTBUFFER:
-elif [[ -v newcutbuffer ]]; then
+elif [[ -v REPLY ]]; then
 	zle .vi-set-buffer ''
-	CUTBUFFER=$newcutbuffer
+	CUTBUFFER=$REPLY
 fi
 zle .$WIDGET
 unset _evil_register

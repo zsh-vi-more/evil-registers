@@ -24,19 +24,19 @@ elif (( $+commands[base64] )); then
 		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64)"\\a${TMUX+'\e\'}
 	}
 	.evil-registers::osc52-put()(
-		local REPLY
+		local r
 		(
 			STTY=-echo
 			printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'}
 			STTY=echo
 		) &
-		read -rs -d $'\a' REPLY
-		: ${(P)2::="$(base64 -d <<< ${REPLY##*;})"}
+		read -rs -d $'\a' r
+		REPLY=$(base64 -d <<< ${r##*;})
 	)
-	zstyle :zle:evil-registers:'\*' yank -- .evil-registers::osc52-yank p
-	zstyle :zle:evil-registers:'+'  yank -- .evil-registers::osc52-yank c
-	zstyle :zle:evil-registers:'\*' put  -p .evil-registers::osc52-put  p
-	zstyle :zle:evil-registers:'+'  put  -p .evil-registers::osc52-put  c
+	zstyle :zle:evil-registers:'\*' yank -  .evil-registers::osc52-yank p
+	zstyle :zle:evil-registers:'+'  yank -  .evil-registers::osc52-yank c
+	zstyle :zle:evil-registers:'\*' put  -r .evil-registers::osc52-put  p
+	zstyle :zle:evil-registers:'+'  put  -r .evil-registers::osc52-put  c
 fi
 # other defaults:
 # readonly registers "/ and ".

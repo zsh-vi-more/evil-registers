@@ -84,20 +84,33 @@ you can register it by adding the appropriate `zstyle`:
 
 ```zsh
 # Here, $p is either a keystroke or a pattern which matches a keystroke
-zstyle :zle:evil-registers:$p yank your-command --with --args
-zstyle :zle:evil-registers:$p put  your-command --with --args
+zstyle :zle:evil-registers:$p yank - your-command --with --args
+zstyle :zle:evil-registers:$p put  - your-command --with --args
 
+# The first argument to a style is a set of flags
+# -v: Don't run a program, treat the handler as a parameter name
+# -a: Add the register name to the handler's args
+# -p: (yank-only): Add the yanked text to the handler's args
+# -r:  (put-only): The function will assign the text to the REPLY parameter
 
-# The following style will add the register keystroke and the line as arguments to your-command
-# Example: With p='[abc]', "byy will run `your-command --which-expects-register b "$line"`
-zstyle :zle:evil-registers:$p yanka your-command --which-expects-register
+# With this style, "byy will run `your-command --which-expects-register b "$yanked_line"`
+zstyle :zle:evil-registers:'[abc]' yank -ap your-command --which-expects-register
 
-# The following style will add the register keystroke as an argument to your-command
-zstyle :zle:evil-registers:$p puta  your-command --which-expects-register
+# With this style, "bp will run `your-command --which-expects-register b`
+# your-command should print to stdout the text to put
+zstyle :zle:evil-registers:'[abc]' put -a  your-command --which-expects-register
+
+# With this style, "bp will run `your-function --which-expects-register b`
+# your-function should set the $REPLY parameter to the text to put
+zstyle :zle:evil-registers:'[abc]' put -ar your-function --which-expects-register
+your-function(){
+	do-something
+	REPLY=$whatever
+}
 
 # The following style will substitute the current value of the variable passed:
-zstyle :zle:evil-registers:$p putv VAR_NAME
-zstyle :zle:evil-registers:$p putv 'array[key]'
+zstyle :zle:evil-registers:$p put -v VAR_NAME
+zstyle :zle:evil-registers:$p put -v 'array[key]'
 ```
 
 If you define a function on a normal-use register (examples: `a`, `T`, `3`),
