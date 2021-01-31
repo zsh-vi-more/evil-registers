@@ -21,18 +21,18 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	zstyle :zle:evil-registers:'+'  yank - xsel -b -i
 elif (( $+commands[base64] )); then
 	.evil-registers::osc52-yank(){
-		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64)"\\a${TMUX+'\e\'}
+		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64)"\\a${TMUX+'\e\'} > ${TTY:-/dev/tty}
 	}
-	.evil-registers::osc52-put()(
+	.evil-registers::osc52-put(){
 		local r
 		(
 			STTY=-echo
-			printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'}
+			printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'} > ${TTY:-/dev/tty}
 			STTY=echo
 		) &
-		read -rs -d $'\a' r
+		read -rs -u0 -d $'\a' r < ${TTY:-/dev/tty}
 		REPLY=$(base64 -d <<< ${r##*;})
-	)
+	}
 	zstyle :zle:evil-registers:'\*' yank -  .evil-registers::osc52-yank p
 	zstyle :zle:evil-registers:'+'  yank -  .evil-registers::osc52-yank c
 	zstyle :zle:evil-registers:'\*' put  -r .evil-registers::osc52-put  p
