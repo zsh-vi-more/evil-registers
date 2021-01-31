@@ -64,18 +64,10 @@ as they substitute the full path instead.
 
 ### Last Insert Register `.`:
 
-The last insert register should work by default,
-as long as the function `zle-keymap-select` does not exist.
-
-If your config creates it, you should consider using
-`add-zle-hook-widget` instead:
-
-```zsh
-function my-zks(){
-	...
-}
-add-zle-hook-widget zle-keymap-select my-zks
-```
+The last insert register should work by default.
+It uses the global parameters `$__last_insert`,
+`$_old_CURSOR`,
+and `$_old_KEYMAP`.
 
 ### Custom Registers:
 
