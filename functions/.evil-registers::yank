@@ -29,14 +29,10 @@ esac
 
 zle .$WIDGET
 
-if [[ ${handler[1]:l} = -*a* ]]; then
-	# Use sched to execute without job control messages
-	# sched splits the parameters
+# Does handler take an argument?
+[[ ${handler[1]:l} = -*a* ]] && handler+=($_evil_register)
 
-	handler+=($_evil_register)
-fi
-
-# handle user registers without argument
+# How does handler take input?
 case ${handler[1]:l} in
 	-v) # $handler is a parameter name
 		typeset -g $handler[2]=$CUTBUFFER
