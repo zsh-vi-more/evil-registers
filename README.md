@@ -129,7 +129,7 @@ add this after you source this plugin:
 (){
 	local op
 	local -a handler
-	for op in {yank,put}{,a,v}; do
+	for op in yank put; do
 		# get the current behavior for '+'
 		zstyle -a :zle:evil-registers:'+' $op handler
 		# if there is a handler, assign it for the empty pattern
