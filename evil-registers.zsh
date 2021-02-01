@@ -24,14 +24,9 @@ elif (( $+commands[base64] )); then
 		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64)"\\a${TMUX+'\e\'} > ${TTY:-/dev/tty}
 	}
 	.evil-registers::osc52-put(){
-		local r
-		(
-			STTY=-echo
-			printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'} > ${TTY:-/dev/tty}
-			STTY=echo
-		) &
-		read -rs -u0 -d $'\a' r < ${TTY:-/dev/tty}
-		REPLY=$(base64 -d <<< ${r##*;})
+		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'} > ${TTY:-/dev/tty}
+		read -rs -u0 -d$'\a' < ${TTY:-/dev/tty}
+		REPLY=$(base64 -d <<< ${REPLY##*;})
 	}
 	zstyle :zle:evil-registers:'\*' yank -  .evil-registers::osc52-yank p
 	zstyle :zle:evil-registers:'+'  yank -  .evil-registers::osc52-yank c
