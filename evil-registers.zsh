@@ -20,18 +20,18 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	zstyle :zle:evil-registers:'\*' yank - xsel -i
 	zstyle :zle:evil-registers:'+'  yank - xsel -b -i
 elif (( $+commands[base64] )); then
-	.evil-registers::osc52-yank(){
+	→evil-registers::osc52-yank(){
 		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64)"\\a${TMUX+'\e\'} > ${TTY:-/dev/tty}
 	}
-	.evil-registers::osc52-put(){
+	→evil-registers::osc52-put(){
 		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'} > ${TTY:-/dev/tty}
 		read -rs -u0 -d$'\a' < ${TTY:-/dev/tty}
 		REPLY=$(base64 -d <<< ${REPLY##*;})
 	}
-	zstyle :zle:evil-registers:'\*' yank -  .evil-registers::osc52-yank p
-	zstyle :zle:evil-registers:'+'  yank -  .evil-registers::osc52-yank c
-	zstyle :zle:evil-registers:'\*' put  -r .evil-registers::osc52-put  p
-	zstyle :zle:evil-registers:'+'  put  -r .evil-registers::osc52-put  c
+	zstyle :zle:evil-registers:'\*' yank -  →evil-registers::osc52-yank p
+	zstyle :zle:evil-registers:'+'  yank -  →evil-registers::osc52-yank c
+	zstyle :zle:evil-registers:'\*' put  -r →evil-registers::osc52-put  p
+	zstyle :zle:evil-registers:'+'  put  -r →evil-registers::osc52-put  c
 fi
 # other defaults:
 # readonly registers "/ and ".
@@ -43,11 +43,11 @@ zstyle :zle:evil-registers:. put -v __last_insert
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
-autoload -Uz .evil-registers::{track-insert,put,yank,setup-editor} add-zle-hook-widget
-add-zle-hook-widget zle-keymap-select .evil-registers::track-insert
+autoload -Uz →evil-registers::{track-insert,put,yank,setup-editor} add-zle-hook-widget
+add-zle-hook-widget zle-keymap-select →evil-registers::track-insert
 # }}}
 # {{{ shadow vi-set-buffer
-.evil-registers::vi-set-buffer(){
+→evil-registers::vi-set-buffer(){
 	typeset -g _evil_register
 	read -k 1 _evil_register
 	zle .vi-set-buffer "$_evil_register"
@@ -62,12 +62,12 @@ add-zle-hook-widget zle-keymap-select .evil-registers::track-insert
 		vi-change vi-change-eol vi-change-whole-line
 		vi-yank vi-yank-whole-line vi-yank-eol
 	); do
-		zle -N "$w" ".evil-registers::yank"
+		zle -N "$w" "→evil-registers::yank"
 	done
 	for w (vi-put-after vi-put-before); do
-		zle -N "$w" ".evil-registers::put"
+		zle -N "$w" "→evil-registers::put"
 	done
-	zle -N vi-set-buffer .evil-registers::vi-set-buffer
+	zle -N vi-set-buffer →evil-registers::vi-set-buffer
 } # }}}
 
 # vim:foldmethod=marker
