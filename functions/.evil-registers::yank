@@ -1,9 +1,8 @@
 #!/usr/bin/env zsh
 emulate -L zsh
 setopt extendedglob
-zmodload zsh/sched
 
-local -a {,a,v}handler
+local -a handler
 
 # On first run, setup editor
 if (($+functions[.evil-registers::setup-editor])); then
@@ -12,51 +11,50 @@ if (($+functions[.evil-registers::setup-editor])); then
 fi
 
 # Get preferences from zstyle
-zstyle -a :zle:evil-registers:${(q)_evil_register} yank   handler
-zstyle -a :zle:evil-registers:${(q)_evil_register} yanka ahandler
-zstyle -a :zle:evil-registers:${(q)_evil_register} yankv vhandler
+zstyle -a :zle:evil-registers:${(q)_evil_register} yank handler
 
-# handle user registers without argument
-if (( $#handler )); then
-	zle .vi-set-buffer x
-	local x
-	x=$registers[x]
-	zle .$WIDGET
-	$handler <<< $registers[x]
-	registers[x]=$x
+# append or set remote
+local old new
+case $_evil_register in
+[A-Z]) # manually append
+	zle .vi-set-buffer "${_evil_register:l}"
+	old=$registers[${_evil_register:l}]
+	;;
+[a-z0-9_]) ;;
+*)
+	_evil_register=x
+	new=:$registers[x] # overwrite
+esac
 
-# handle user registers with argument
-elif (($#ahandler)); then
+zle .$WIDGET
 
-	# append or set remote
-	local old new
-	case $_evil_register in
-	[A-Z]) # manually append
-		zle .vi-set-buffer "${_evil_register:l}"
-		old=$registers[${_evil_register:l}]
+# Does handler take an argument?
+[[ ${handler[1]:l} = -*a* ]] && handler+=($_evil_register)
+
+# How does handler take input?
+case ${handler[1]:l} in
+	-v) # $handler is a parameter name
+		typeset -g $handler[2]=$CUTBUFFER
 		;;
-	[a-z0-9_]) ;;
-	*)
-		_evil_register=x
-		new=:$registers[x] # overwrite
-	esac
-	zle .$WIDGET
-	# Use sched to execute without job control messages
-	# sched splits the parameters
-	sched +0 $ahandler "$_evil_register" "${(q)registers[${_evil_register:l}]}"
-	if (($#new)); then
-		registers[x]=${new:1}
-	else
-		registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
-	fi
+	-*p*) # positional parameter
+		(${handler:1} $CUTBUFFER &)
+		;;
+	-*)  # stdin
+		(${handler:1} <<< $CUTBUFFER &)
+		;;
+	'') # no handler
+		;;
+	*)  # no flags, assume stdin with whole $handler
+		($handler <<< $CUTBUFFER &)
+		;;
 
-# handle user registers from variable
-elif (($#vhandler)) && [[ -v $vhandler ]]; then
-	newcutbuffer="${(P)vhandler}"
+esac
 
-# fallback to default behavior
+# Append?
+if (($#new)); then
+	registers[x]=${new:1}
 else
-	zle .$WIDGET
+	registers[${_evil_register:l}]="$old${registers[${_evil_register:l}]}"
 fi
 
 unset _evil_register

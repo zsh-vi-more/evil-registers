@@ -2,28 +2,41 @@
 zmodload zsh/parameter
 
 if (( $+commands[termux-clipboard-get] )); then
-	zstyle :zle:evil-registers:'[*+]' put  termux-clipboard-get
-	zstyle :zle:evil-registers:'[*+]' yank termux-clipboard-set
+	zstyle :zle:evil-registers:'[*+]' put  - termux-clipboard-get
+	zstyle :zle:evil-registers:'[*+]' yank - termux-clipboard-set
 elif (( $+WAYLAND_DISPLAY & $+commands[wl-paste] )); then
-	zstyle :zle:evil-registers:'\*' put  wl-paste -p -n
-	zstyle :zle:evil-registers:'+'  put  wl-paste -n
-	zstyle :zle:evil-registers:'\*' yank wl-copy -p
-	zstyle :zle:evil-registers:'+'  yank wl-copy
+	zstyle :zle:evil-registers:'\*' put  - wl-paste -p -n
+	zstyle :zle:evil-registers:'+'  put  - wl-paste -n
+	zstyle :zle:evil-registers:'\*' yank - wl-copy -p
+	zstyle :zle:evil-registers:'+'  yank - wl-copy
 elif (( $+DISPLAY & $+commands[xclip] )); then
-	zstyle :zle:evil-registers:'\*' put  xclip -out
-	zstyle :zle:evil-registers:'+'  put  xclip -selection clipboard -out
-	zstyle :zle:evil-registers:'\*' yank xclip
-	zstyle :zle:evil-registers:'+'  yank xclip -selection clipboard
+	zstyle :zle:evil-registers:'\*' put  - xclip -out
+	zstyle :zle:evil-registers:'+'  put  - xclip -selection clipboard -out
+	zstyle :zle:evil-registers:'\*' yank - xclip
+	zstyle :zle:evil-registers:'+'  yank - xclip -selection clipboard
 elif (( $+DISPLAY & $+commands[xsel] )); then
-	zstyle :zle:evil-registers:'\*' put  xsel -o
-	zstyle :zle:evil-registers:'+'  put  xsel -b -o
-	zstyle :zle:evil-registers:'\*' yank xsel -i
-	zstyle :zle:evil-registers:'+'  yank xsel -b -i
+	zstyle :zle:evil-registers:'\*' put  - xsel -o
+	zstyle :zle:evil-registers:'+'  put  - xsel -b -o
+	zstyle :zle:evil-registers:'\*' yank - xsel -i
+	zstyle :zle:evil-registers:'+'  yank - xsel -b -i
+elif (( $+commands[base64] )); then
+	.evil-registers::osc52-yank(){
+		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64)"\\a${TMUX+'\e\'} > ${TTY:-/dev/tty}
+	}
+	.evil-registers::osc52-put(){
+		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'} > ${TTY:-/dev/tty}
+		read -rs -u0 -d$'\a' < ${TTY:-/dev/tty}
+		REPLY=$(base64 -d <<< ${REPLY##*;})
+	}
+	zstyle :zle:evil-registers:'\*' yank -  .evil-registers::osc52-yank p
+	zstyle :zle:evil-registers:'+'  yank -  .evil-registers::osc52-yank c
+	zstyle :zle:evil-registers:'\*' put  -r .evil-registers::osc52-put  p
+	zstyle :zle:evil-registers:'+'  put  -r .evil-registers::osc52-put  c
 fi
 # other defaults:
 # readonly registers "/ and ".
-zstyle :zle:evil-registers:/ putv LASTSEARCH
-zstyle :zle:evil-registers:. putv __last_insert
+zstyle :zle:evil-registers:/ put -v LASTSEARCH
+zstyle :zle:evil-registers:. put -v __last_insert
 # }}}
 # {{{ Handle fpath/$0
 # ref: zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html#zero-handling

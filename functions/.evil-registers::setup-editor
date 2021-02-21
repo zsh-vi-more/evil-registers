@@ -55,6 +55,8 @@ for context (${(M)all_styles:#:zle:evil-registers:*}){
 	esac
 
 	# Set yank and put operations for the current context
-	zstyle $context yanka .evil-registers::${editor}-yank
-	zstyle $context  puta .evil-registers::${editor}-put
+	# -a: Append register name as arg
+	# -p: Append yanked text as arg
+	zstyle $context yank -ap .evil-registers::${editor}-yank
+	zstyle $context  put -a  .evil-registers::${editor}-put
 }
