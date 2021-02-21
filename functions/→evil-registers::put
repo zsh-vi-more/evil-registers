@@ -4,9 +4,9 @@ emulate -L zsh
 local -a handler
 
 # On first run, setup editor
-if (($+functions[.evil-registers::setup-editor])); then
-	.evil-registers::setup-editor
-	unfunction .evil-registers::setup-editor
+if (($+functions[→evil-registers::setup-editor])); then
+	→evil-registers::setup-editor
+	unfunction →evil-registers::setup-editor
 fi
 
 # Get preferences from zstyle
