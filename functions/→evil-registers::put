@@ -19,8 +19,18 @@ local REPLY
 
 # How does handler output?
 case ${handler[1]:l} in
-	-v)   # $handler is a parameter name
-		REPLY=${(P)handler}
+	-v) # parameter name(s)
+		local -a p
+		for REPLY (${handler[2,-1]}) {
+			p+=("${(P)REPLY}")
+		}
+		if (($#reply > 1)); then
+			# list of parameters, quote each
+			REPLY=${(j: :)${(q-)p}}
+		else
+			# single parameter, insert
+			REPLY=$p
+		fi
 	;;
 	-*r*) # REPLY parameter
 		${handler:1}
