@@ -36,7 +36,7 @@ fi
 # other defaults:
 # readonly registers "/ and ".
 zstyle :zle:evil-registers:/ put -v LASTSEARCH
-zstyle :zle:evil-registers:. put -v __last_insert
+zstyle :zle:evil-registers:. put -v '__zvm_track_insert[i]'
 # }}}
 # {{{ Handle fpath/$0
 # ref: zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html#zero-handling
@@ -45,6 +45,7 @@ zstyle :zle:evil-registers:. put -v __last_insert
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
 autoload -Uz →evil-registers::{track-insert,put,yank,setup-editor} add-zle-hook-widget
 add-zle-hook-widget zle-keymap-select →evil-registers::track-insert
+typeset -gA __zvm_track_insert
 # }}}
 # {{{ shadow vi-set-buffer
 →evil-registers::vi-set-buffer(){
