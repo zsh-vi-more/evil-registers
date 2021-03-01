@@ -10,7 +10,7 @@ if (($+functions[→evil-registers::setup-editor])); then
 fi
 
 # Get preferences from zstyle
-zstyle -a :zle:evil-registers:${(q)_evil_register} put  handler
+zstyle -a :zle:evil-registers:${_evil_register//:/\\:} put  handler
 
 local REPLY
 
