@@ -50,8 +50,11 @@ typeset -gA __zvm_track_insert
 # {{{ shadow vi-set-buffer
 →evil-registers::vi-set-buffer(){
 	typeset -g _evil_register
-	read -k 1 _evil_register
-	zle .vi-set-buffer "$_evil_register"
+	# return non-zero if read fails
+	if read -k 1 _evil_register; then
+		zle .vi-set-buffer "$_evil_register"
+		return 0
+	fi
 }
 # }}}
 (){ # {{{ register new widgets
