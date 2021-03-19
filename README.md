@@ -33,6 +33,23 @@ We'd love to support more clipboards.
 
 See a demo [here](https://asciinema.org/a/q0N73xBvkYDBhBjR8DmD5F78w)!
 
+## Insert Mode `<Ctrl-R>[reg]` mapping
+
+You can enable Vim-style Ctrl-r inserting by setting the following style _before_ sourcing this plugin:
+
+```zsh
+zstyle :zle:evil-registers ctrl-r true
+```
+
+Keep in mind that
+[other plugins](https://github.com/junegunn/fzf/blob/1a191ec6f75acd1a0c89d28745a4b7cdf047875a/shell/key-bindings.zsh#L109)
+may bind to 
+`^R`, so alternatively you can manually bind the function after sourcing all your plugins:
+
+```zsh
+bindkey -M viins '^r' →evil-registers::ctrl-r
+```
+
 ## Supported interfaces
 
 #### System Clipboards

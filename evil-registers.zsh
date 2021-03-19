@@ -57,6 +57,15 @@ typeset -gA __zvm_track_insert
 	fi
 }
 # }}}
+# {{{ Vim-style <Ctrl-r>$reg functionality
+→evil-registers::ctrl-r(){
+	zle vi-set-buffer -w && zle vi-put-before -w
+}
+zle -N →evil-registers::ctrl-r
+if zstyle -t :zle:evil-registers ctrl-r; then
+	bindkey -M viins '^r' →evil-registers::ctrl-r
+fi
+# }}}
 (){ # {{{ register new widgets
 	local w
 	# TODO: best practice?
