@@ -59,7 +59,11 @@ typeset -gA __zvm_track_insert
 # }}}
 # {{{ Vim-style <Ctrl-r>$reg functionality
 →evil-registers::ctrl-r(){
+	print -Pn '%S"%s'
 	zle vi-set-buffer -w && zle vi-put-before -w
+	local -i ret=$?
+	zle redisplay
+	return ret
 }
 zle -N →evil-registers::ctrl-r
 if zstyle -t :zle:evil-registers ctrl-r; then
