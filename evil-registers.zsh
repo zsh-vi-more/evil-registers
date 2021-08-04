@@ -19,6 +19,9 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	zstyle :zle:evil-registers:'+'  put  - xsel -b -o
 	zstyle :zle:evil-registers:'\*' yank - xsel -i
 	zstyle :zle:evil-registers:'+'  yank - xsel -b -i
+elif (( $+commands[pbpaste] )); then
+	zstyle :zle:evil-registers:'[*+]' put  - pbpaste
+	zstyle :zle:evil-registers:'[*+]' yank - pbcopy
 elif (( $+commands[base64] )); then
 	→evil-registers::osc52-yank(){
 		printf ${TMUX+'\ePtmux;\e'}'\e]52;%c;%s\a'${TMUX+'\e\\'} "$1" "$(base64)" > ${TTY:-/dev/tty}
