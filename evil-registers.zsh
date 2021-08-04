@@ -21,10 +21,10 @@ elif (( $+DISPLAY & $+commands[xsel] )); then
 	zstyle :zle:evil-registers:'+'  yank - xsel -b -i
 elif (( $+commands[base64] )); then
 	→evil-registers::osc52-yank(){
-		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1;$(base64)"\\a${TMUX+'\e\'} > ${TTY:-/dev/tty}
+		printf ${TMUX+'\ePtmux;\e'}'\e]52;%c;%s\a'${TMUX+'\e\\'} "$1" "$(base64)" > ${TTY:-/dev/tty}
 	}
 	→evil-registers::osc52-put(){
-		printf ${TMUX+'\ePtmux;\e'}'\e]52;'"$1"';?;\a'${TMUX+'\e\'} > ${TTY:-/dev/tty}
+		printf ${TMUX+'\ePtmux;\e'}'\e]52;%c;?;\a'${TMUX+'\e\\'} "$1" > ${TTY:-/dev/tty}
 		read -rs -u0 -d$'\a' < ${TTY:-/dev/tty}
 		REPLY=$(base64 -d <<< ${REPLY##*;})
 	}
