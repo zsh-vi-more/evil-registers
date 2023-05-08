@@ -23,15 +23,19 @@ for context (${(M)all_styles:#:zle:evil-registers:*}){
 		nvim)
 			→evil-registers::nvim-yank(){
 				local MATCH MBEGIN MEND
-				timeout -k 15 10 nvr -s --nostart --remote-expr \
+				local server=({$XDG_RUNTIME_DIR,/tmp}/nvim*(N=Y1))
+				(($#server)) &&
+					timeout -k 15 10 nvim --server $server[1] --remote-expr \
 					"setreg('$1', \"${2//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
 			}
 			→evil-registers::nvim-put(){
-				if [[ $1 = [%#] ]]; then
-					nvr -s --nostart --remote-expr "expand('$1:p')"
-				else
-					nvr -s --nostart --remote-expr "getreg('$_evil_register')"
-				fi
+				local server=({$XDG_RUNTIME_DIR,/tmp}/nvim*(N=Y1))
+				(($#server)) &&
+					if [[ $1 = [%#] ]]; then
+						nvim --remote-expr "expand('$1:p')"
+					else
+						nvim --remote-expr "getreg('$_evil_register')"
+					fi
 			}
 		;;
 		vim)
