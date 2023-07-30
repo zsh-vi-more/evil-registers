@@ -21,20 +21,22 @@ for context (${(M)all_styles:#:zle:evil-registers:*}){
 	# check if the functions are already defined
 	(($+functions[→evil-registers::${editor}-yank])) || case $editor in
 		nvim)
+      # After neovim/neovim#22970 is fixed, we can remove 2>&1 and properly 
+      # put errors on zle -M.
 			→evil-registers::nvim-yank(){
 				local MATCH MBEGIN MEND
 				local server=({$XDG_RUNTIME_DIR,/tmp}/nvim*(N=Y1))
 				(($#server)) &&
 					timeout -k 15 10 nvim --headless --server $server[1] --remote-expr \
-					"setreg('$1', \"${2//(#m)[\\\"]/\\$MATCH}\")" >/dev/null
+					"setreg('$1', \"${2//(#m)[\\\"]/\\$MATCH}\")" >/dev/null 2>&1
 			}
 			→evil-registers::nvim-put(){
 				local server=({$XDG_RUNTIME_DIR,/tmp}/nvim*(N=Y1))
 				(($#server)) &&
 					if [[ $1 = [%#] ]]; then
-						nvim --headless --server $server[1] --remote-expr "expand('$1:p')"
+						nvim --headless --server $server[1] --remote-expr "expand('$1:p')" 2>&1
 					else
-						nvim --headless --server $server[1] --remote-expr "getreg('$_evil_register')"
+						nvim --headless --server $server[1] --remote-expr "getreg('$_evil_register')" 2>&1
 					fi
 			}
 		;;
