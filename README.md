@@ -66,7 +66,7 @@ with registers `+` and `*`.
 
 Synchronization of the alphabetic registers is supported with these editors:
 
-- Neovim (requires `nvr`)
+- Neovim (>=0.9)
 - Vim (requires +clientserver support)
 
 Example:
