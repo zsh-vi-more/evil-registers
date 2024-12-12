@@ -40,12 +40,12 @@ case ${handler[1]:l} in
 		(${handler:1} $CUTBUFFER &)
 		;;
 	-*)  # stdin
-		(${handler:1} <<< $CUTBUFFER &)
+		(print -rn $CUTBUFFER | ${handler:1} &)
 		;;
 	'') # no handler
 		;;
 	*)  # no flags, assume stdin with whole $handler
-		($handler <<< $CUTBUFFER &)
+		(print -rn $CUTBUFFER | $handler &)
 		;;
 
 esac
